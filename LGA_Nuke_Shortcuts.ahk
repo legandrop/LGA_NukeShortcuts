@@ -1,33 +1,75 @@
-﻿#SingleInstance, Force
-#NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
-
-
+﻿#Requires AutoHotkey v2.0.2+
+#SingleInstance Force ;Limit one running version of this script
+DetectHiddenWindows true ;ensure can find hidden windows
+ListLines True ;on helps debug a script-this is already on by default
+SetWorkingDir A_InitialWorkingDir ;Set the working directory to the scripts directory
 
 ;---------Nuke--------
 
 
 ^+d:: ; Ctrl+Shift+D Para agregar un keyframe en donde está el cursor parpadeando o sino en donde esta el puntero del mouse
 {
-    CoordMode, Mouse, Screen
-    MouseMove, %A_CaretX%, %A_CaretY%, 0
-    Click, Right
-    Sleep, 50 ; Espera breve para que se abra el menú contextual
-    Send, {Down}
-    Sleep, 30 ; Espera breve antes de enviar Enter
-    Send, {Enter}
-    return
+    CoordMode "Mouse", "Screen"
+    if (CaretGetPos(&caretX, &caretY)) {
+        ; Si se puede obtener la posición del cursor, usamos esa
+        MouseMove caretX, caretY, 0
+    } else {
+        ; Si no, usamos la posición actual del mouse
+        MouseGetPos(&mouseX, &mouseY)
+        MouseMove mouseX, mouseY, 0
+    }
+    Click "Right"
+    Sleep 50 ; Espera breve para que se abra el menú contextual
+    Send "{Down}"
+    Sleep 30 ; Espera breve antes de enviar Enter
+    Send "{Enter}"
 }
 
+^!+d::  ; Click en la parte de abajo del viewer para que anden los shortcuts para saltar de key a key
+{
+    if (WinExist("ahk_exe Nuke*.exe") or WinExist("ahk_class Qt5152WindowIcon") or WinExist("NukeX")) {
+        WinActivate
+        CoordMode "Mouse", "Screen"
+        MouseGetPos(&startX, &startY)
+        
+        ; Obtener dimensiones de la pantalla
+        screenWidth := A_ScreenWidth
+        screenHeight := A_ScreenHeight
+        
+        ; Calcular posición relativa
+        targetX := Round(900 * A_ScreenWidth / 3440)  ; Asumiendo 3440 como ancho de referencia
+        targetY := Round(1230 * A_ScreenHeight / 1440)  ; Asumiendo 1440 como alto de referencia
+        
+        Send "{Ctrl Down}{Ctrl Up}{Alt Down}{Alt Up}"
+        MouseMove targetX, targetY, 0
+        Click
+        Send "^a"
+        Sleep 10
+        Send "f"
+        MouseMove startX, startY, 0
+    } else {
+        activeWindow := WinGetTitle("A")
+        activeClass := WinGetClass("A")
+        activeExe := WinGetProcessName("A")
+        MsgBox "No se pudo encontrar la ventana de Nuke. Asegúrate de que Nuke esté abierto.`n`nVentana activa: " activeWindow "`nClase de ventana activa: " activeClass "`nEjecutable activo: " activeExe
 
-
-^!F7::  ; Click en la parte de abajo del viewer para que anden los shortcuts para saltar de key a key
-ControlSend, Qt5QWindowOwnDCIcon1, {Ctrl Down}{Ctrl Up}{Alt Down}{Alt Up}
-MouseGetPos CurX, CurY
-MouseMove 900, 1230, 0
-Click
-;Sleep 1000
-Send ^a
-Sleep 10
-Send {f}
-MouseMove %CurX%, %CurY%, 0
-return
+        ; Listar todas las ventanas detectables
+        windowList := ""
+        idList := WinGetList()
+        for id in idList {
+            try {
+                title := WinGetTitle("ahk_id " id)
+                class := WinGetClass("ahk_id " id)
+                exe := WinGetProcessName("ahk_id " id)
+                if (title != "" or class != "" or exe != "") {
+                    windowList .= "Título: " title "`nClase: " class "`nEjecutable: " exe "`n`n"
+                }
+            } catch as err {
+                ; Ignorar ventanas a las que no podemos acceder
+                continue
+            }
+        }
+        FileAppend windowList, "ventanas_detectadas.txt"
+        Run "ventanas_detectadas.txt"
+    }
+}
