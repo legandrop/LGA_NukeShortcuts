@@ -4,8 +4,26 @@ DetectHiddenWindows true ;ensure can find hidden windows
 ListLines True ;on helps debug a script-this is already on by default
 SetWorkingDir A_InitialWorkingDir ;Set the working directory to the scripts directory
 
-;---------Nuke--------
+; Leer configuración
+configFile := "LGA_Nuke_Shortcuts_Settings.ini"
+if (FileExist(configFile)) {
+    targetX := IniRead(configFile, "MousePosition", "TargetX", 900)
+    targetY := IniRead(configFile, "MousePosition", "TargetY", 1230)
+} else {
+    MsgBox "Archivo de configuración no encontrado. Se usarán valores predeterminados."
+    targetX := 900
+    targetY := 1230
+}
 
+; Obtener la resolución actual de la pantalla
+screenWidth := A_ScreenWidth
+screenHeight := A_ScreenHeight
+
+; Calcular la resolución de referencia
+referenceWidth := 3440  ; Valor de referencia para el ancho
+referenceHeight := Round(referenceWidth * (screenHeight / screenWidth))
+
+;---------Nuke--------
 
 ^+d:: ; Ctrl+Shift+D Para agregar un keyframe en donde está el cursor parpadeando o sino en donde esta el puntero del mouse
 {
@@ -32,16 +50,12 @@ SetWorkingDir A_InitialWorkingDir ;Set the working directory to the scripts dire
         CoordMode "Mouse", "Screen"
         MouseGetPos(&startX, &startY)
         
-        ; Obtener dimensiones de la pantalla
-        screenWidth := A_ScreenWidth
-        screenHeight := A_ScreenHeight
-        
         ; Calcular posición relativa
-        targetX := Round(900 * A_ScreenWidth / 3440)  ; Asumiendo 3440 como ancho de referencia
-        targetY := Round(1230 * A_ScreenHeight / 1440)  ; Asumiendo 1440 como alto de referencia
+        adjustedX := Round(targetX * screenWidth / referenceWidth)
+        adjustedY := Round(targetY * screenHeight / referenceHeight)
         
         Send "{Ctrl Down}{Ctrl Up}{Alt Down}{Alt Up}"
-        MouseMove targetX, targetY, 0
+        MouseMove adjustedX, adjustedY, 0
         Click
         Send "^a"
         Sleep 10
