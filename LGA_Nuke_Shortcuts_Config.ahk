@@ -3,7 +3,6 @@
 SetWorkingDir A_InitialWorkingDir
 
 ; Incluir los scripts necesarios
-#Include %A_ScriptDir%\+resources\DarkMode.scriptlet
 #Include %A_ScriptDir%\+resources\ColorButton.ahk
 
 ; Leer la configuración actual
@@ -20,11 +19,11 @@ if (FileExist(configFile)) {
 ; Crear la GUI
 MyGui := Gui()
 MyGui.BackColor := "0x202020"  ; Color de fondo
-MyGui.SetFont("s10", "Segoe UI")
 
-; Aplicar tema oscuro
-SetWindowAttribute(MyGui)
-SetWindowTheme(MyGui)
+; Aplicar tema oscuro a la barra de título
+DllCall("dwmapi\DwmSetWindowAttribute", "Ptr", MyGui.Hwnd, "Int", 20, "Int*", True, "Int", 4)
+
+MyGui.SetFont("s10", "Segoe UI")
 
 ; Añadir controles en una disposición horizontal
 addKeyframeText := MyGui.Add("Text", "x10 y10 w200 cWhite", "Add Keyframe Shortcut:")
@@ -33,22 +32,19 @@ addKeyframeEdit := MyGui.Add("Edit", "x+10 yp w100 vAddKeyframe -E0x200", addKey
 clickDopeSheetText := MyGui.Add("Text", "x10 y+10 w200 cWhite", "Click Dope Sheet Shortcut:")
 clickDopeSheetEdit := MyGui.Add("Edit", "x+10 yp w100 vClickDopeSheet -E0x200", clickDopeSheetHotkey)  ; -E0x200 elimina el borde
 
-; Añadir checkbox original para inicio automático
-autoStartCheckbox := MyGui.Add("Checkbox", "x10 y+20 w200 vAutoStart cWhite", "Run at Windows startup")
-autoStartCheckbox.Value := FileExist(A_Startup "\LGA_Nuke_Shortcuts.lnk") ? 1 : 0
-autoStartCheckbox.OnEvent("Click", ToggleAutoStart)
+; Añadir checkbox personalizado
+checkboxSize := 16
+customCheckbox := MyGui.Add("Picture", "x10 y+20 w" checkboxSize " h" checkboxSize " vAutoStart", A_ScriptDir "\+resources\check_off.jpg")
+customCheckboxLabel := MyGui.Add("Text", "x+5 yp h" checkboxSize " cWhite", "Run at Windows startup")
+customCheckbox.OnEvent("Click", ToggleCheckbox)
+customCheckboxLabel.OnEvent("Click", (*) => ToggleCheckbox())
 
-; Añadir fake checkbox
-SGW := SysGet(71)  ; SM_CXMENUCHECK
-SGH := SysGet(72)  ; SM_CYMENUCHECK
-fakeCheckbox := MyGui.Add("Text", "x10 y+10 w" SGW " h" SGH " 0x201000 vFakeAutoStart", "")  ; SS_NOTIFY | SS_SUNKEN
-fakeCheckboxLabel := MyGui.Add("Text", "x+5 yp h" SGH " cWhite 0x200", "Fake Checkbox (Example)")
-fakeCheckbox.Value := FileExist(A_Startup "\LGA_Nuke_Shortcuts.lnk") ? "✓" : ""
-fakeCheckbox.OnEvent("Click", ToggleFakeAutoStart)
-fakeCheckboxLabel.OnEvent("Click", (*) => ToggleFakeAutoStart())
+; Inicializar el estado del checkbox
+isAutoStartEnabled := FileExist(A_Startup "\LGA_Nuke_Shortcuts.lnk")
+UpdateCheckboxImage(customCheckbox, isAutoStartEnabled)
 
 ; Crear un botón personalizado usando _BtnColor
-saveButton := MyGui.Add("Button", "x10 y+20 w120", "Save Changes")
+saveButton := MyGui.Add("Button", "x220 y+20 w120", "Save Changes")
 saveButton.OnEvent("Click", SaveChanges)
 saveButton.SetColor("0x4e479a", "0xFFFFFF", 0, "0x4e479a", 15)  ; Texto blanco
 
@@ -65,11 +61,26 @@ ApplyDarkModeToControls(GuiObj) {
             case "Edit":
                 ctrl.Opt("+Background333333 cWhite")
             case "Text":
-                if (ctrl.ClassNN = fakeCheckbox.ClassNN) {
-                    ctrl.SetFont("s12 c4e479a", "Segoe UI Symbol")
-                }
+                ctrl.Opt("cWhite")
         }
     }
+}
+
+; Función para actualizar la imagen del checkbox
+UpdateCheckboxImage(ctrl, isChecked) {
+    if (isChecked) {
+        ctrl.Value := A_ScriptDir "\+resources\check_on.jpg"
+    } else {
+        ctrl.Value := A_ScriptDir "\+resources\check_off.jpg"
+    }
+}
+
+; Función para alternar el estado del checkbox
+ToggleCheckbox(*) {
+    global isAutoStartEnabled
+    isAutoStartEnabled := !isAutoStartEnabled
+    UpdateCheckboxImage(customCheckbox, isAutoStartEnabled)
+    ToggleAutoStart()
 }
 
 ; Función para guardar los cambios
@@ -89,30 +100,16 @@ SaveChanges(*) {
     MsgBox("Changes saved successfully.", "Success", 64)
 }
 
-; Función para activar/desactivar el inicio automático (checkbox original)
+; Función para activar/desactivar el inicio automático
 ToggleAutoStart(*) {
     exePath := A_ScriptDir "\LGA_Nuke_Shortcuts.exe"
     shortcutPath := A_Startup "\LGA_Nuke_Shortcuts.lnk"
 
-    if (autoStartCheckbox.Value) {
+    if (isAutoStartEnabled) {
         FileCreateShortcut(exePath, shortcutPath)
-        fakeCheckbox.Value := "✓"  ; Actualizar también el fake checkbox
     } else {
         if (FileExist(shortcutPath)) {
             FileDelete(shortcutPath)
         }
-        fakeCheckbox.Value := ""  ; Actualizar también el fake checkbox
     }
-}
-
-; Función para toggle del fake checkbox
-ToggleFakeAutoStart(*) {
-    if (fakeCheckbox.Value = "") {
-        fakeCheckbox.Value := "✓"
-        autoStartCheckbox.Value := 1  ; Actualizar también el checkbox original
-    } else {
-        fakeCheckbox.Value := ""
-        autoStartCheckbox.Value := 0  ; Actualizar también el checkbox original
-    }
-    ToggleAutoStart()  ; Llamar a la función original para manejar el acceso directo
 }
