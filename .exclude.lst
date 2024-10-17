@@ -8,7 +8,6 @@ __pycache__/
 OLD/
 Building_Blocks/
 +Building_Blocks/
-+resources/
 Compilar/
 +Backup/
 +exclude.lst
@@ -19,3 +18,5 @@ README.md
 .cursorrules
 *.ahk
 LGA_Release_Generator.bat
+*.psd
+add-comments.md
