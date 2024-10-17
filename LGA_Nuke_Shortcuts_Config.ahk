@@ -218,7 +218,7 @@ ReloadMainScript() {
 ShowAboutWindow(*) {
     ; Crear la ventana "Acerca de" sin barra de título y siempre encima
     aboutGui := Gui("-Caption +AlwaysOnTop +ToolWindow")
-    aboutGui.BackColor := "0x26272b"
+    aboutGui.BackColor := "0x202020"
     aboutGui.SetFont("s12 cFFFFFF", "Segoe UI")  ; Asegurar que el color del texto sea blanco
 
     ; Establecer el tamaño deseado de la ventana
@@ -257,9 +257,9 @@ ShowAboutWindow(*) {
     ; Obtener la posición y tamaño de la ventana principal (MyGui)
     MyGui.GetPos(&mainX, &mainY, &mainW, &mainH)
 
-    ; Calcular la posición centrada relativa a la ventana principal
-    xPos := mainX + (mainW - desiredWidth) / 2
-    yPos := mainY + (mainH - desiredHeight) / 2
+    ; Calcular la posición para que aparezca debajo de la ventana principal, alineada a la derecha
+    xPos := mainX + mainW - desiredWidth - 4
+    yPos := mainY + mainH - 6
 
     ; Mostrar la ventana "Acerca de" en la posición calculada sin activarla
     aboutGui.Show("x" . Round(xPos) . " y" . Round(yPos) . " NoActivate")
