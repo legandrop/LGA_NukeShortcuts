@@ -1,6 +1,6 @@
 # LGA Nuke Shortcuts
 
-Esta herramienta, creada con AutoHotkey v2, proporciona dos atajos de teclado útiles para mejorar el flujo de trabajo en Nuke/NukeX.
+Esta herramienta, creada con AutoHotkey v2, proporciona dos atajos de teclado útiles para mejorar el flujo de trabajo en Nuke/NukeX, junto con una interfaz gráfica para configurar estos atajos y otras opciones.
 
 ## Instalación
 
@@ -8,11 +8,9 @@ LGA Nuke Shortcuts es una aplicación portable, lo que significa que no requiere
 
 1. Descarga el archivo ZIP del proyecto.
 2. Extrae el contenido en cualquier ubicación de tu elección en tu computadora.
-3. Ejecuta el archivo `LGA_Nuke_Shortcuts.ahk` para iniciar la aplicación.
+3. Ejecuta el archivo `LGA_Nuke_Shortcuts.exe` para iniciar la aplicación.
 
-Opcionalmente, puedes configurar el inicio automático con Windows utilizando el script `LGA_AutoStart_Manager.bat` (ver sección "Inicio automático" más abajo).
-
-## Atajos de teclado
+## Atajos de teclado predeterminados
 
 1. **Ctrl+Shift+D**: 
    - Función: Agrega un keyframe en la posición actual del cursor o del puntero del mouse.
@@ -29,19 +27,35 @@ Opcionalmente, puedes configurar el inicio automático con Windows utilizando el
 
 ## Configuración
 
-Para ajustar la posición del clic para el segundo atajo, edita el archivo `LGA_Nuke_Shortcuts_Settings.ini`:
+LGA Nuke Shortcuts incluye una interfaz gráfica de usuario (GUI) para configurar fácilmente los atajos de teclado y otras opciones:
 
-1. Abre el archivo `LGA_Nuke_Shortcuts_Settings.ini` con un editor de texto.
-2. Modifica los valores de `TargetX` y `TargetY` bajo la sección `[MousePosition]`.
-3. Estos valores representan la posición del panel Dope Sheet o Curve Editor en tu interfaz de NukeX.
-4. Ajusta estos valores según la resolución de tu pantalla y la configuración de tu interfaz.
+1. Ejecuta `LGA_Nuke_Shortcuts_Config.exe` para abrir la ventana de configuración.
+2. En esta ventana puedes:
+   - Cambiar los atajos de teclado para ambas funciones.
+   - Ajustar la posición del clic para el Dope Sheet.
+   - Calibrar la posición del Dope Sheet automáticamente.
+   - Activar o desactivar el inicio automático con Windows.
 
-## Inicio automático
+### Calibración del Dope Sheet
 
-Se incluye un script llamado `LGA_AutoStart_Manager.bat` que te permite gestionar el inicio automático de LGA Nuke Shortcuts con Windows:
+1. Haz clic en el botón "Calibrate" en la ventana de configuración.
+2. Sigue las instrucciones en pantalla para hacer clic en el área del Dope Sheet en Nuke.
+3. La posición se guardará automáticamente.
 
-- Función: Crea o elimina un acceso directo en la carpeta de inicio de Windows.
-- Uso: Ejecuta `LGA_AutoStart_Manager.bat`:
-  - Si no existe un acceso directo, lo creará y LGA Nuke Shortcuts se iniciará automáticamente con Windows.
-  - Si ya existe un acceso directo, lo eliminará y LGA Nuke Shortcuts ya no se iniciará automáticamente con Windows.
-- Esto te permite alternar fácilmente entre tener LGA Nuke Shortcuts iniciándose automáticamente o no.
+### Inicio automático
+
+Puedes activar o desactivar el inicio automático con Windows directamente desde la interfaz de configuración:
+
+- Marca o desmarca la casilla "Run at Windows startup" en la ventana de configuración.
+
+## Archivos necesarios
+
+Para que LGA Nuke Shortcuts funcione correctamente, asegúrate de tener los siguientes archivos en la carpeta `+resources`:
+
+- `LGA_Nuke_Shortcuts_Settings.ini`: Archivo de configuración que almacena los atajos de teclado y la posición del Dope Sheet.
+- `check_on.jpg` y `check_off.jpg`: Imágenes utilizadas para el checkbox personalizado en la interfaz de configuración.
+- `DopeSheetPos.bmp`: Imagen de ejemplo utilizada en la ventana de calibración.
+- `ColorButton.ahk`: Script auxiliar para personalizar los botones en la interfaz de configuración.
+
+
+v1.5 | Lega | 2024
