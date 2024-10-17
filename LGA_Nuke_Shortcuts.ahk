@@ -5,14 +5,18 @@ ListLines True ;on helps debug a script-this is already on by default
 SetWorkingDir A_InitialWorkingDir ;Set the working directory to the scripts directory
 
 ; Leer configuración
-configFile := "LGA_Nuke_Shortcuts_Settings.ini"
+configFile := A_ScriptDir "\+resources\LGA_Nuke_Shortcuts_Settings.ini"
 if (FileExist(configFile)) {
     targetX := IniRead(configFile, "MousePosition", "TargetX", 900)
     targetY := IniRead(configFile, "MousePosition", "TargetY", 1230)
+    addKeyframeHotkey := IniRead(configFile, "Shortcuts", "AddKeyframe", "^+d")
+    clickDopeSheetHotkey := IniRead(configFile, "Shortcuts", "ClickDopeSheet", "^!+d")
 } else {
-    MsgBox "Archivo de configuración no encontrado. Se usarán valores predeterminados."
+    MsgBox "Archivo de configuración no encontrado en +resources. Se usarán valores predeterminados."
     targetX := 900
     targetY := 1230
+    addKeyframeHotkey := "^+d"
+    clickDopeSheetHotkey := "^!+d"
 }
 
 ; Obtener la resolución actual de la pantalla
@@ -25,7 +29,11 @@ referenceHeight := Round(referenceWidth * (screenHeight / screenWidth))
 
 ;---------Nuke--------
 
-^+d:: ; Ctrl+Shift+D Para agregar un keyframe en donde está el cursor parpadeando o sino en donde esta el puntero del mouse
+; Definir los hotkeys dinámicamente
+Hotkey addKeyframeHotkey, AddKeyframe
+Hotkey clickDopeSheetHotkey, ClickDopeSheet
+
+AddKeyframe(*)
 {
     CoordMode "Mouse", "Screen"
     if (CaretGetPos(&caretX, &caretY)) {
@@ -43,7 +51,7 @@ referenceHeight := Round(referenceWidth * (screenHeight / screenWidth))
     Send "{Enter}"
 }
 
-^!+d::  ; Click en la parte de abajo del viewer para que anden los shortcuts para saltar de key a key
+ClickDopeSheet(*)
 {
     if (WinExist("ahk_exe Nuke*.exe") or WinExist("ahk_class Qt5152WindowIcon") or WinExist("NukeX")) {
         WinActivate
