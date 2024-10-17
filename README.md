@@ -2,6 +2,16 @@
 
 Esta herramienta, creada con AutoHotkey v2, proporciona dos atajos de teclado útiles para mejorar el flujo de trabajo en Nuke/NukeX.
 
+## Instalación
+
+LGA Nuke Shortcuts es una aplicación portable, lo que significa que no requiere una instalación tradicional:
+
+1. Descarga el archivo ZIP del proyecto.
+2. Extrae el contenido en cualquier ubicación de tu elección en tu computadora.
+3. Ejecuta el archivo `LGA_Nuke_Shortcuts.ahk` para iniciar la aplicación.
+
+Opcionalmente, puedes configurar el inicio automático con Windows utilizando el script `LGA_AutoStart_Manager.bat` (ver sección "Inicio automático" más abajo).
+
 ## Atajos de teclado
 
 1. **Ctrl+Shift+D**: 
