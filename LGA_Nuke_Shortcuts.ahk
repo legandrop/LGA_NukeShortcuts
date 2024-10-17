@@ -95,3 +95,33 @@ ClickDopeSheet(*)
         Run "ventanas_detectadas.txt"
     }
 }
+
+; Función para mostrar la ventana "Acerca de"
+ShowAboutWindow(*) {
+    aboutGui := Gui("-Caption +AlwaysOnTop +ToolWindow")
+    aboutGui.BackColor := "0x202020"
+    aboutGui.SetFont("s10 cWhite", "Segoe UI")
+    
+    aboutGui.Add("Text", "w200 Center", "Lega | 2024")
+    githubLink := aboutGui.Add("Link", "w200 Center", '<a href="https://github.com/legandrop/LGA_NukeShortcuts">Github</a>')
+    
+    ; Obtener las dimensiones de la pantalla
+    screenWidth := A_ScreenWidth
+    screenHeight := A_ScreenHeight
+    
+    ; Obtener las dimensiones de la ventana
+    aboutGui.Show("Hide")
+    winPos := aboutGui.GetPos()
+    winWidth := winPos.W
+    winHeight := winPos.H
+    
+    ; Calcular la posición centrada
+    xPos := (screenWidth - winWidth) / 2
+    yPos := (screenHeight - winHeight) / 2
+    
+    ; Mostrar la ventana en la posición centrada
+    aboutGui.Show("x" . xPos . " y" . yPos . " NoActivate")
+    
+    ; Configurar un temporizador para cerrar la ventana después de 2 segundos
+    SetTimer(() => aboutGui.Destroy(), -2000)
+}
