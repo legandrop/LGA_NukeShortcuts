@@ -222,8 +222,8 @@ ShowAboutWindow(*) {
     aboutGui.SetFont("s12 cFFFFFF", "Segoe UI")  ; Asegurar que el color del texto sea blanco
 
     ; Establecer el tamaño deseado de la ventana
-    desiredWidth := 200    ; Ancho en píxeles
-    desiredHeight := 100   ; Alto en píxeles
+    desiredWidth := 110    ; Ancho en píxeles
+    desiredHeight := 70   ; Alto en píxeles
 
     ; Calcular la altura del texto (aproximadamente)
     textHeight := 24  ; Altura aproximada para fuente de tamaño 12
@@ -236,7 +236,7 @@ ShowAboutWindow(*) {
     aboutGui.Add("Text", "x0 y" . (topMargin) . " w" . desiredWidth . " Center", "Lega | 2024")
     
     ; Crear un texto clickeable en lugar de un hipervínculo
-    githubText := aboutGui.Add("Text", "x0 y" . (topMargin + textHeight + 10) . " w" . desiredWidth . " Center c4e479a", "Github")
+    githubText := aboutGui.Add("Text", "x0 y" . (topMargin + textHeight + 5) . " w" . desiredWidth . " Center c4e479a", "Github")
     githubText.OnEvent("Click", (*) => Run("https://github.com/legandrop/LGA_NukeShortcuts"))
 
     ; Mostrar la GUI ocultamente con el tamaño definido
