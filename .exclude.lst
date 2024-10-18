@@ -17,6 +17,7 @@ Thumbs.db
 README.md
 .cursorrules
 *.ahk
-LGA_Release_Generator.bat
+_LGA_ReleaseGen.bat
 *.psd
 add-comments.md
+*.zip

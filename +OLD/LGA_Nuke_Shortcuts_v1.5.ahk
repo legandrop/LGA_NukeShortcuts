@@ -44,18 +44,11 @@ AddKeyframe(*)
         MouseGetPos(&mouseX, &mouseY)
         MouseMove mouseX, mouseY, 0
     }
-    
-    ; Desactivamos el movimiento del ratón
-    BlockInput "MouseMove"
-    
     Click "Right"
     Sleep 50 ; Espera breve para que se abra el menú contextual
     Send "{Down}"
     Sleep 30 ; Espera breve antes de enviar Enter
     Send "{Enter}"
-    
-    ; Reactivamos el movimiento del ratón
-    BlockInput "MouseMoveOff"
 }
 
 ClickDopeSheet(*)

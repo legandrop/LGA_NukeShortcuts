@@ -58,4 +58,4 @@ Para que LGA Nuke Shortcuts funcione correctamente, asegúrate de tener los sigu
 - `ColorButton.ahk`: Script auxiliar para personalizar los botones en la interfaz de configuración.
 
 
-v1.5 | Lega | 2024
+v1.6 | Lega | 2024
