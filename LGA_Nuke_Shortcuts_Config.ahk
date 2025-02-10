@@ -33,21 +33,23 @@ MyGui.SetFont("s10", "Segoe UI")
 
 ; Añadir controles para configurar los atajos de teclado
 addKeyframeText := MyGui.Add("Text", "x10 y15 w200 cWhite", "Add Keyframe Shortcut:")
-addKeyframeEdit := MyGui.Add("Edit", "x+0 yp w100 h20 vAddKeyframe -E0x200", addKeyframeHotkey)
+addKeyframeEdit := MyGui.Add("Edit", "x+0 yp w150 h20 vAddKeyframe -E0x200", TranslateHotkey(addKeyframeHotkey))
 saveButton1 := MyGui.Add("Button", "x+15 yp-3 w80 h26", "Save")
 saveButton1.OnEvent("Click", SaveChanges)
 saveButton1.SetColor("0x4e479a", "0xFFFFFF", 0, "0x4e479a", 15)
 
 clickDopeSheetText := MyGui.Add("Text", "x10 y+10 w200 cWhite", "Click Dope Sheet Shortcut:")
-clickDopeSheetEdit := MyGui.Add("Edit", "x+0 yp w100 h20 vClickDopeSheet -E0x200", clickDopeSheetHotkey)
+clickDopeSheetEdit := MyGui.Add("Edit", "x+0 yp w150 h20 vClickDopeSheet -E0x200", TranslateHotkey(clickDopeSheetHotkey))
 saveButton2 := MyGui.Add("Button", "x+15 yp-3 w80 h26", "Save")
 saveButton2.OnEvent("Click", SaveChanges)
 saveButton2.SetColor("0x4e479a", "0xFFFFFF", 0, "0x4e479a", 15)
 
 ; Añadir controles para configurar la posición del Dope Sheet
-MyGui.Add("Text", "x10 y+10 w200 cWhite", "Dope Sheet Position (x/y):")
-targetXEdit := MyGui.Add("Edit", "x+0 yp w42 h20 vTargetX -E0x200", targetX)
-targetYEdit := MyGui.Add("Edit", "x+15 yp w42 h20 vTargetY -E0x200", targetY)
+MyGui.Add("Text", "x10 y+10 w200 cWhite", "Dope Sheet Position:")
+MyGui.Add("Text", "x+0 yp cWhite", "X") 
+targetXEdit := MyGui.Add("Edit", "x+6 yp w52 h20 vTargetX -E0x200", targetX)
+MyGui.Add("Text", "x+19 yp cWhite", "Y") 
+targetYEdit := MyGui.Add("Edit", "x+6 yp w52 h20 vTargetY -E0x200", targetY)
 calibrateButton := MyGui.Add("Button", "x+15 yp-3 w80 h26", "Calibrate")
 calibrateButton.OnEvent("Click", OpenCalibrationWindow)
 calibrateButton.SetColor("0x4e479a", "0xFFFFFF", 0, "0x4e479a", 15)
@@ -67,7 +69,7 @@ UpdateCheckboxImage(customCheckbox, isAutoStartEnabled)
 ApplyDarkModeToControls(MyGui)
 
 ; Añadir texto de versión clickeable
-versionText := MyGui.Add("Text", "x380 yp+20 cWhite", "v1.5")
+versionText := MyGui.Add("Text", "x430 yp+20 cWhite", "v1.7")
 versionText.OnEvent("Click", ShowAboutWindow)
 
 ; Configurar evento de cierre de la GUI
@@ -187,8 +189,16 @@ ToggleCheckbox(*) {
 
 ; Función para guardar los cambios en la configuración
 SaveChanges(*) {
-    newAddKeyframeHotkey := addKeyframeEdit.Value
-    newClickDopeSheetHotkey := clickDopeSheetEdit.Value
+    ; Función para revertir el formato legible a los símbolos de AutoHotkey
+    RevertHotkey(hotkey) {
+        hotkey := StrReplace(hotkey, "Ctrl + ", "^")
+        hotkey := StrReplace(hotkey, "Alt + ", "!")
+        hotkey := StrReplace(hotkey, "Shift + ", "+")
+        return hotkey
+    }
+    
+    newAddKeyframeHotkey := RevertHotkey(addKeyframeEdit.Value)
+    newClickDopeSheetHotkey := RevertHotkey(clickDopeSheetEdit.Value)
     newTargetX := targetXEdit.Value
     newTargetY := targetYEdit.Value
 
@@ -288,4 +298,39 @@ ShowAboutWindow(*) {
 ; Función para abrir el enlace de Github
 OpenGithub(*) {
     Run("https://github.com/legandrop/LGA_NukeShortcuts")
+}
+
+; Función completamente corregida para traducir los atajos de teclado
+TranslateHotkey(hotkey) {
+    ; Crear un array para almacenar los modificadores
+    modifiers := []
+    
+    ; Identificar y almacenar los modificadores en el orden correcto
+    if InStr(hotkey, "^") {
+        modifiers.Push("Ctrl")
+        hotkey := StrReplace(hotkey, "^", "")
+    }
+    if InStr(hotkey, "!") {
+        modifiers.Push("Alt")
+        hotkey := StrReplace(hotkey, "!", "")
+    }
+    if InStr(hotkey, "+") {
+        modifiers.Push("Shift")
+        hotkey := StrReplace(hotkey, "+", "")
+    }
+    
+    ; Unir los modificadores con " + " y agregar la tecla final
+    if modifiers.Length > 0 {
+        return StrJoin(modifiers, " + ") " + " hotkey
+    }
+    return hotkey
+}
+
+; Función auxiliar para unir elementos de un array con un separador
+StrJoin(array, separator) {
+    result := ""
+    for index, item in array {
+        result .= (index > 1 ? separator : "") item
+    }
+    return result
 }

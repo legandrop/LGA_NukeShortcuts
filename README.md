@@ -58,4 +58,13 @@ Para que LGA Nuke Shortcuts funcione correctamente, asegúrate de tener los sigu
 - `ColorButton.ahk`: Script auxiliar para personalizar los botones en la interfaz de configuración.
 
 
-v1.6 | Lega | 2024
+v1.7 | Lega | 2024
+
+
+
+### Para el desarrollador:
+1. Está hecho con AutoHotkey v2.1 alpha 9, por lo que es compatible con Windows 10 y superior.
+2. Para compilar a .exe, se utiliza el compilador de AutoHotkey ahk2exe con estos settings:
+   - Elegir destination
+   - Elegir icon
+   - Elegir Autohotkey 2.1 alpha 14 U64
