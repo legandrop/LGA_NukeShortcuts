@@ -29,12 +29,17 @@ referenceHeight := Round(referenceWidth * (screenHeight / screenWidth))
 
 ;---------Nuke--------
 
-; Definir los hotkeys dinámicamente
+; Definir los hotkeys globalmente
 Hotkey addKeyframeHotkey, AddKeyframe
 Hotkey clickDopeSheetHotkey, ClickDopeSheet
 
 AddKeyframe(*)
 {
+    ; Verificar si la ventana activa es de Nuke
+    if !(WinActive("ahk_class Qt5QWindowIcon") || WinActive("ahk_class Qt5152QWindowIcon")) {
+        return ; Salir si no es la ventana correcta
+    }
+
     CoordMode "Mouse", "Screen"
     if (CaretGetPos(&caretX, &caretY)) {
         ; Si se puede obtener la posición del cursor, usamos esa
@@ -60,6 +65,11 @@ AddKeyframe(*)
 
 ClickDopeSheet(*)
 {
+    ; Verificar si la ventana activa es de Nuke
+    if !(WinActive("ahk_class Qt5QWindowIcon") || WinActive("ahk_class Qt5152QWindowIcon")) {
+        return ; Salir si no es la ventana correcta
+    }
+
     if (WinExist("ahk_exe Nuke*.exe") or WinExist("ahk_class Qt5152WindowIcon") or WinExist("NukeX")) {
         WinActivate
         CoordMode "Mouse", "Screen"
