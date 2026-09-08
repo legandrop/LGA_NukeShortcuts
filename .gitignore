@@ -1,2 +1,5 @@
 # Ignorar archivos zip
 *.zip
+
+# Icono de carpeta en Windows
+desktop.ini
