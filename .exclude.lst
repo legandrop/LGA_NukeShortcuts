@@ -15,7 +15,6 @@ Compilar/
 .DS_Store
 Thumbs.db
 README.md
-.cursorrules
 *.ahk
 _LGA_ReleaseGen.bat
 *.psd

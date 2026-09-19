@@ -39,7 +39,18 @@ rem Definir el nombre completo del nuevo archivo zip
 set "NEWZIPNAME=%ZIPNAME%_v!newver!.zip"
 
 rem Crear el archivo zip con las exclusiones especificadas
-"C:\Program Files\7-Zip\7z.exe" a -tzip "!NEWZIPNAME!" * -xr@.exclude.lst
+rem Ademas se excluye lo que ignora .git\info\exclude: archivos locales de trabajo que viven en
+rem la carpeta pero no en el repo, y que tampoco tienen que entrar al zip. Sus lineas de
+rem comentario no matchean ningun archivo, asi que 7-Zip las puede leer como patrones.
+rem El zip se arma con toda la carpeta: sin el .git\info\exclude que escribe RepoRules
+rem (apply-excludes de LGA_RepoTools), los archivos locales de trabajo entrarian al zip
+rem publico. En un clon nuevo ese archivo no existe todavia: se corta aca.
+findstr /c:"Generado por apply-excludes" ".git\info\exclude" >nul 2>&1
+if errorlevel 1 (
+    echo ERROR: falta el .git\info\exclude de RepoRules. Correr apply-excludes de LGA_RepoTools y reintentar.
+    exit /b 1
+)
+"C:\Program Files\7-Zip\7z.exe" a -tzip "!NEWZIPNAME!" * -xr@.exclude.lst -xr@.git\info\exclude
 
 echo Se ha creado el archivo !NEWZIPNAME!
 
