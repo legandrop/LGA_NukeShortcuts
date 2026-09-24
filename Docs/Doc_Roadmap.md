@@ -22,8 +22,10 @@ El código de mac está escrito pero nunca se compiló.
 
 ## 3. Íconos
 
-- App y barra de menú de macOS (ícono monocromo en modo template), y el `.ico` de Windows, con el
-  sistema de íconos de las apps LGA. Hoy se usa el ícono de la versión AutoHotkey.
+- El ícono nuevo (dos keys, `resources/icons/Alta/`) ya está en Windows. Falta en la Mac: medirlo con
+  `make_planchas.py medir` de LGA_IconLab para confirmar las dos métricas, armar el `.icon` de Icon
+  Composer y compilar `Assets.car` + `AppIcon.icns`, y la versión monocroma en modo template para la
+  barra de menú.
 - Una captura nueva del layout de Nuke para el calibrador a doble resolución: la actual mide 400 px de
   ancho y se ve borrosa en pantallas HiDPI.
 

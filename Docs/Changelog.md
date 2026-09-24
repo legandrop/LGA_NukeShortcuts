@@ -3,6 +3,16 @@
 Cada entrada es una versión: se agrega arriba con el número siguiente (de a centésimos: 2.01, 2.02,
 2.03...) y después se corre `sync_version`, que lo lleva a `CMakeLists.txt` y a `VERSION`.
 
+v2.03:
+
+El icono era el mismo glifo de radiación de Nuke que usa OpenInNukeX, y además anterior a la marca
+(seis anillos de color en vez de tres planchas CMY). Se eligió uno propio entre seis propuestas: dos
+keys de animación en fila, el rombo con el que Nuke marca cada key. Va con el tratamiento de la marca
+(planchas CMY en multiply, cuerpo #262626, tintas levantadas a negro 38; cuerpo 65 %, separación
+~24 px) en el `.ico` del exe y en el PNG de la ventana y la bandeja. `tools/icono/armar_icono.py`
+regenera todo, y las seis siluetas quedan en `resources/icons/Alta/propuestas/`.
+[ Icono - Dos keys propios en lugar del glifo de OpenInNukeX ]
+
 v2.02:
 
 Con la ventana abierta la tarjeta de estado decía siempre "Waiting for Nuke": la que está al frente es
