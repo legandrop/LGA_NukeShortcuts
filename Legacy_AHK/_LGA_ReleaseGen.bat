@@ -45,12 +45,13 @@ rem comentario no matchean ningun archivo, asi que 7-Zip las puede leer como pat
 rem El zip se arma con toda la carpeta: sin el .git\info\exclude que escribe RepoRules
 rem (apply-excludes de LGA_RepoTools), los archivos locales de trabajo entrarian al zip
 rem publico. En un clon nuevo ese archivo no existe todavia: se corta aca.
-findstr /c:"Generado por apply-excludes" ".git\info\exclude" >nul 2>&1
+rem Este script vive en Legacy_AHK\, un nivel abajo de la raiz del repo: el .git esta en ..\
+findstr /c:"Generado por apply-excludes" "..\.git\info\exclude" >nul 2>&1
 if errorlevel 1 (
     echo ERROR: falta el .git\info\exclude de RepoRules. Correr apply-excludes de LGA_RepoTools y reintentar.
     exit /b 1
 )
-"C:\Program Files\7-Zip\7z.exe" a -tzip "!NEWZIPNAME!" * -xr@.exclude.lst -xr@.git\info\exclude
+"C:\Program Files\7-Zip\7z.exe" a -tzip "!NEWZIPNAME!" * -xr@.exclude.lst -xr@..\.git\info\exclude
 
 echo Se ha creado el archivo !NEWZIPNAME!
 
