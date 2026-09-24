@@ -31,6 +31,8 @@ El código de mac está escrito pero nunca se compiló.
 
 - Recorrer la checklist de app nueva de LGA_Base_QT_C_Py.
 - Agregar la app al manifiesto de LGA_Updates, que es lo que lee el updater.
+- En el sitio (LGA_SiteLega) la ficha ya está como «coming soon»: con el release, pasarla a
+  `publicado` con su `assetDescarga`, y ponerle el ícono nuevo en lugar de la sigla «NS».
 - Retirar `Legacy_AHK/` en un commit propio cuando la versión Qt llegue a paridad.
 
 ## 5. Investigar
