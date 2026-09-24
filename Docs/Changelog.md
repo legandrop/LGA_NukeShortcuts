@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-09-24 (3)
+
+Faltaba la versión Qt/C++ multiplataforma. Se arma con la estructura de las otras apps LGA: tray, tema,
+inicio con Windows, updater e instalador Inno de LGA_FolderSwitch, y todo lo que antes venía de otro
+repo copiado adentro (`tools/`). Una capa de plataforma separa Windows (RegisterHotKey, SendInput) de
+macOS (Carbon, CGEvent, permiso de Accesibilidad), y la segunda todavía no se compiló. Corrige los dos
+problemas de la versión AutoHotkey: el punto del Dope Sheet se guarda relativo a la ventana de Nuke y
+Nuke se detecta por el proceso. Los atajos solo se registran con Nuke al frente, y se pueden cambiar
+desde Settings. `--self-test` y `--simulate-action` prueban la lógica sin mover el mouse.
+[ App - Version Qt multiplataforma con instalador ]
+
 ## 2026-09-24 (2)
 
 La raíz del repo tiene que quedar libre para la estructura de la versión Qt. Los scripts AutoHotkey,

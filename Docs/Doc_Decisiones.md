@@ -6,17 +6,6 @@ El trabajo pendiente está en [`Doc_Roadmap.md`](Doc_Roadmap.md).
 
 ## Abiertas
 
-### D-01 · Dónde vive la versión Qt (abierta el 2026-09-24)
-
-- **Qué se decide:** si el port a Qt/C++ reemplaza a la versión AutoHotkey en este mismo repo o arranca
-  en uno nuevo.
-- **Opciones:**
-  - A. Este repo. La versión AHK convive hasta la paridad y después se retira en un commit propio. Se
-    conservan la historia, las estrellas y el link que ya circula.
-  - B. Repo nuevo. Historia limpia, pero el link viejo queda apuntando a una app que ya no se mantiene.
-- **Bloquea:** el primer commit de código.
-- **Recomendación:** A.
-
 ### D-02 · Cómo se guarda el punto del Dope Sheet (abierta el 2026-09-24)
 
 - **Qué se decide:** en qué unidades se guarda el punto calibrado. Hoy son coordenadas absolutas de
@@ -61,17 +50,14 @@ El trabajo pendiente está en [`Doc_Roadmap.md`](Doc_Roadmap.md).
     con el nombre de la app, y el usuario lo puede apagar ahí.
   - B. Un LaunchAgent (`~/Library/LaunchAgents/*.plist`). Anda en versiones viejas, pero en macOS 13+
     aparece como "ítem en segundo plano" de un desarrollador sin identificar.
+- **Mientras tanto:** A (así está el código: `platform/mac/AutoStartMac.mm`, y el bundle pide
+  macOS 13).
 - **Recomendación:** A, si no hace falta soportar macOS 12.
-
-### D-06 · Cómo se distribuye en Windows (abierta el 2026-09-24)
-
-- **Qué se decide:** si la versión Qt sigue siendo un `.zip` portable o pasa a instalador con updater.
-- **Opciones:**
-  - A. Instalador Inno + updater, como FolderSwitch. Inicio con Windows, desinstalación limpia y
-    updates con verificación SHA-256.
-  - B. `.zip` portable, como hoy. Sin updater: cada versión se baja a mano.
-- **Recomendación:** A. En mac, DMG en cualquier caso.
 
 ## Decididas
 
-(ninguna todavía)
+- **2026-09-24 · D-01: la versión Qt vive en este repo.** La versión AutoHotkey pasa a `Legacy_AHK/`,
+  donde sigue funcionando, y la raíz toma la estructura de las otras apps LGA.
+- **2026-09-24 · D-06: instalador con todo, como las otras apps LGA.** Instalador Inno con cierre por
+  ruta y desinstalación limpia, updater con SHA-256, y nada que dependa de otros repos ni de
+  instalaciones globales salvo Qt para compilar.

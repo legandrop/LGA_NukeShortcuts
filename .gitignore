@@ -1,5 +1,27 @@
-# Ignorar archivos zip
-*.zip
+# Builds
+build/
+build-release/
+deploy/
+installer/
+out/
 
-# Icono de carpeta en Windows
-desktop.ini
+# Logs y config local de debug
+debug.log
+*.log
+
+# IDE / editor
+.vscode/
+.idea/
+CMakeLists.txt.user
+*.autosave
+
+# Qt Creator / CMake
+CMakeUserPresets.json
+compile_commands.json
+
+# Sistema
+Thumbs.db
+Desktop.ini
+
+# Zips de la version AutoHotkey (se publican como release, no en el repo)
+*.zip

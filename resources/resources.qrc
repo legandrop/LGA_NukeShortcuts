@@ -1,0 +1,11 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource prefix="/">
+        <file>icons/LGA_NukeShortcuts.png</file>
+        <file>icons/check.png</file>
+        <file>images/DopeSheetPos.png</file>
+        <file>fonts/Inter-Regular.ttf</file>
+        <file>fonts/Inter-Medium.ttf</file>
+        <file>fonts/Inter-SemiBold.ttf</file>
+    </qresource>
+</RCC>
