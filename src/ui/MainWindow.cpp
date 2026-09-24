@@ -297,7 +297,9 @@ MainWindow::Status MainWindow::currentStatus() const
         || m_state->registration(ShortcutAction::FrameDopeSheet) == AppState::Registration::Failed) {
         return Status::ShortcutTaken;
     }
-    return m_state->nukeInFront() ? Status::On : Status::Waiting;
+    // Activos es activos, este Nuke al frente o no: mientras la ventana esta abierta la que esta al
+    // frente es ella, asi que un "esperando a Nuke" se veria siempre (Lega, 2026-09-24).
+    return Status::On;
 }
 
 void MainWindow::refresh()
@@ -313,13 +315,7 @@ void MainWindow::refresh()
     case Status::On:
         dot = QStringLiteral("on");
         title = QStringLiteral("Shortcuts are on");
-        text = QStringLiteral("Nuke is in front. Both shortcuts are live.");
-        button = QStringLiteral("Pause");
-        break;
-    case Status::Waiting:
-        dot = QStringLiteral("waiting");
-        title = QStringLiteral("Waiting for Nuke");
-        text = QStringLiteral("Active only while Nuke is in front.");
+        text = QStringLiteral("Only in Nuke. Other apps keep these keys.");
         button = QStringLiteral("Pause");
         break;
     case Status::Paused:
@@ -393,7 +389,6 @@ void MainWindow::onStatusButtonClicked()
 {
     switch (currentStatus()) {
     case Status::On:
-    case Status::Waiting:
         m_state->setEnabled(false);
         break;
     case Status::Paused:

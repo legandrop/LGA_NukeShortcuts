@@ -17,7 +17,7 @@ class SpotThumbnail;
 class TitleBar;
 
 // Ventana de Settings, segun el diseno aprobado: barra de titulo propia y cuatro tarjetas.
-//  1. Estado: activos / esperando a Nuke / en pausa / un atajo tomado / falta el permiso (mac).
+//  1. Estado: activos / en pausa / un atajo tomado / falta el permiso (mac).
 //  2. Shortcuts: las dos acciones, cada una con sus teclas y el lapiz para cambiarlas.
 //  3. Dope Sheet position: el punto guardado sobre la captura del layout de Nuke y "Calibrate...".
 //  4. La app: inicio con la sesion y updates.
@@ -66,7 +66,7 @@ private slots:
     void onStatusButtonClicked();
 
 private:
-    enum class Status { On, Waiting, Paused, ShortcutTaken, NeedsPermission };
+    enum class Status { On, Paused, ShortcutTaken, NeedsPermission };
 
     void buildUi();
     void connectWrites();

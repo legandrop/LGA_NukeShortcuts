@@ -122,12 +122,10 @@ QLabel#optionLabel { color: @text; font-size: @fs13_5; }
 QLabel#meta { color: @textFaint; font-size: @fs12; }
 QFrame#divider { background-color: @divider; border: none; min-height: 1px; max-height: 1px; }
 
-/* Punto de estado: verde lleno (activo con Nuke al frente), anillo verde (activo, esperando a
-   Nuke), gris (en pausa), rojo (un atajo no se pudo registrar), ambar (falta un permiso). El anillo
-   descuenta el borde del tamano para medir lo mismo que los llenos (10 px). */
+/* Punto de estado: verde (activo), gris (en pausa), rojo (un atajo no se pudo registrar), ambar
+   (falta un permiso). */
 QLabel#statusDot { border-radius: 5px; min-width: 10px; max-width: 10px; min-height: 10px; max-height: 10px; background-color: @textFaint; }
 QLabel#statusDot[state="on"] { background-color: @ok; }
-QLabel#statusDot[state="waiting"] { background-color: transparent; border: 2px solid @ok; min-width: 6px; max-width: 6px; min-height: 6px; max-height: 6px; }
 QLabel#statusDot[state="paused"] { background-color: #555555; }
 QLabel#statusDot[state="error"] { background-color: @error; }
 QLabel#statusDot[state="warn"] { background-color: @warn; }

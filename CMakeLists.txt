@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 # Unica fuente de verdad del numero de version: el codigo lo lee de NUKESHORTCUTS_VERSION, y el
-# Info.plist, el instalador y el zip lo derivan de aca. Arranca en 2.0: la 1.x es la version
-# AutoHotkey (Legacy_AHK/).
-project(LGA_NukeShortcuts VERSION 2.0 LANGUAGES CXX)
+# Info.plist, el instalador y el zip lo derivan de aca. La mueve sync_version desde el changelog, de a
+# centesimos (2.01, 2.02...). La 1.x es la version AutoHotkey (Legacy_AHK/).
+project(LGA_NukeShortcuts VERSION 2.02 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

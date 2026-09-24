@@ -44,7 +44,7 @@ namespace {
 
 const QStringList kStates = {
     QStringLiteral("on"),
-    QStringLiteral("waiting"),
+    QStringLiteral("outside-nuke"),
     QStringLiteral("paused"),
     QStringLiteral("taken"),
     QStringLiteral("permission"),
@@ -146,7 +146,9 @@ int runUiShot(const QStringList &args)
     appState.setDopeSheetSpot(QPointF(0.89, 0.72));
     appState.setRegistration(ShortcutAction::AddKeyframe, AppState::Registration::Registered);
     appState.setRegistration(ShortcutAction::FrameDopeSheet, AppState::Registration::Registered);
-    if (state == QLatin1String("waiting")) {
+    if (state == QLatin1String("outside-nuke")) {
+        // Lo que se ve siempre con la ventana abierta: Nuke no esta al frente y los atajos estan
+        // sueltos. Tiene que decir "activos" igual (no "esperando a Nuke").
         appState.setNukeInFront(false);
         appState.setRegistration(ShortcutAction::AddKeyframe, AppState::Registration::Idle);
         appState.setRegistration(ShortcutAction::FrameDopeSheet, AppState::Registration::Idle);

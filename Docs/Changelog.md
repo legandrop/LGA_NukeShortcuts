@@ -1,6 +1,18 @@
 # Changelog
 
-## 2026-09-24 (4)
+Cada entrada es una versión: se agrega arriba con el número siguiente (de a centésimos: 2.01, 2.02,
+2.03...) y después se corre `sync_version`, que lo lleva a `CMakeLists.txt` y a `VERSION`.
+
+v2.02:
+
+Con la ventana abierta la tarjeta de estado decía siempre "Waiting for Nuke": la que está al frente es
+la ventana misma, así que Nuke nunca podía estarlo. Ahora, con los atajos activos, dice que están
+activos y aclara que fuera de Nuke las teclas pasan a las otras apps. Además la versión pasa a moverse
+sola con el changelog, como en las otras apps LGA de versión continua: cada entrada es una versión de a
+centésimos y `sync_version` (en PowerShell y en sh, sin Python) la lleva a `CMakeLists.txt` y `VERSION`.
+[ App - Estado siempre activo y version continua ]
+
+v2.01:
 
 Los atajos ya se registraban solo con Nuke al frente, pero el aviso de "cambió la ventana del frente"
 llega encolado: si el usuario apretaba el atajo justo al salir de Nuke, la combinación se perdía en
@@ -8,7 +20,7 @@ la otra app. Ahora el atajo pregunta en el momento qué ventana está al frente 
 suelta los atajos y le devuelve la combinación a esa app, como si Nuke Shortcuts no existiera.
 [ Atajos - Fuera de Nuke la combinacion pasa a la app del frente ]
 
-## 2026-09-24 (3)
+v2.00:
 
 Faltaba la versión Qt/C++ multiplataforma. Se arma con la estructura de las otras apps LGA: tray, tema,
 inicio con Windows, updater e instalador Inno de LGA_FolderSwitch, y todo lo que antes venía de otro
@@ -19,15 +31,11 @@ Nuke se detecta por el proceso. Los atajos solo se registran con Nuke al frente,
 desde Settings. `--self-test` y `--simulate-action` prueban la lógica sin mover el mouse.
 [ App - Version Qt multiplataforma con instalador ]
 
-## 2026-09-24 (2)
-
 La raíz del repo tiene que quedar libre para la estructura de la versión Qt. Los scripts AutoHotkey,
 sus `.exe`, `+resources/`, el README de esa versión y el generador del zip pasan a `Legacy_AHK/`, donde
 siguen funcionando igual porque leen todo relativo a su propia carpeta; el generador ahora busca el
 `.git` un nivel arriba. Se deja de versionar un archivo de notas de trabajo que no era parte de la app.
 [ Repo - La version AutoHotkey pasa a Legacy_AHK ]
-
-## 2026-09-24 (1)
 
 La herramienta es un par de scripts AutoHotkey solo para Windows, con dos problemas de fondo: el punto
 calibrado del Dope Sheet se guarda en coordenadas absolutas escaladas contra un ancho fijo de 3440 px,
