@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-24 (4)
+
+Los atajos ya se registraban solo con Nuke al frente, pero el aviso de "cambió la ventana del frente"
+llega encolado: si el usuario apretaba el atajo justo al salir de Nuke, la combinación se perdía en
+la otra app. Ahora el atajo pregunta en el momento qué ventana está al frente y, si no es Nuke,
+suelta los atajos y le devuelve la combinación a esa app, como si Nuke Shortcuts no existiera.
+[ Atajos - Fuera de Nuke la combinacion pasa a la app del frente ]
+
 ## 2026-09-24 (3)
 
 Faltaba la versión Qt/C++ multiplataforma. Se arma con la estructura de las otras apps LGA: tray, tema,

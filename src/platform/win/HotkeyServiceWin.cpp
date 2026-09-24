@@ -118,6 +118,48 @@ bool HotkeyService::isRegistered(int id) const
     return d->registered.contains(id);
 }
 
+void HotkeyService::passThrough(const Shortcut &shortcut)
+{
+    const UINT vk = nativeKey(shortcut.key);
+    if (vk == 0) {
+        return;
+    }
+    // Los modificadores del atajo que el usuario ya no tiene apretados se aprietan y se sueltan
+    // alrededor de la tecla; los que sigue apretando se dejan como estan.
+    struct Modifier
+    {
+        Qt::KeyboardModifier qt;
+        WORD vk;
+    };
+    const Modifier modifiers[] = {{Qt::ControlModifier, VK_CONTROL},
+                                  {Qt::AltModifier, VK_MENU},
+                                  {Qt::ShiftModifier, VK_SHIFT},
+                                  {Qt::MetaModifier, VK_LWIN}};
+    INPUT inputs[10] = {};
+    int count = 0;
+    WORD pressed[4] = {};
+    int pressedCount = 0;
+    const auto key = [&inputs, &count](WORD code, bool up) {
+        INPUT &input = inputs[count++];
+        input.type = INPUT_KEYBOARD;
+        input.ki.wVk = code;
+        input.ki.dwFlags = (up ? KEYEVENTF_KEYUP : 0) | (code == VK_LWIN ? KEYEVENTF_EXTENDEDKEY : 0);
+    };
+    for (const Modifier &modifier : modifiers) {
+        if ((shortcut.modifiers & modifier.qt) && !(GetAsyncKeyState(modifier.vk) & 0x8000)) {
+            key(modifier.vk, false);
+            pressed[pressedCount++] = modifier.vk;
+        }
+    }
+    key(static_cast<WORD>(vk), false);
+    key(static_cast<WORD>(vk), true);
+    for (int i = pressedCount - 1; i >= 0; --i) {
+        key(pressed[i], true);
+    }
+    SendInput(static_cast<UINT>(count), inputs, sizeof(INPUT));
+    qInfo() << "[HotkeyService] Combinacion devuelta a la app del frente:" << shortcut.toPortableString();
+}
+
 bool HotkeyService::probe(const Shortcut &shortcut)
 {
     const UINT vk = nativeKey(shortcut.key);

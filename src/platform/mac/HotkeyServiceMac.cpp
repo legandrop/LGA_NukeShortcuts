@@ -140,6 +140,28 @@ bool HotkeyService::isRegistered(int id) const
     return d->refs.contains(id);
 }
 
+void HotkeyService::passThrough(const Shortcut &shortcut)
+{
+    const UInt32 key = nativeKey(shortcut.key);
+    if (key == UINT32_MAX) {
+        return;
+    }
+    CGEventFlags flags = 0;
+    if (shortcut.modifiers & Qt::ControlModifier) flags |= kCGEventFlagMaskCommand;
+    if (shortcut.modifiers & Qt::MetaModifier) flags |= kCGEventFlagMaskControl;
+    if (shortcut.modifiers & Qt::AltModifier) flags |= kCGEventFlagMaskAlternate;
+    if (shortcut.modifiers & Qt::ShiftModifier) flags |= kCGEventFlagMaskShift;
+    for (const bool down : {true, false}) {
+        CGEventRef event = CGEventCreateKeyboardEvent(nullptr, static_cast<CGKeyCode>(key), down);
+        if (event) {
+            CGEventSetFlags(event, flags);
+            CGEventPost(kCGHIDEventTap, event);
+            CFRelease(event);
+        }
+    }
+    qInfo() << "[HotkeyService] Combinacion devuelta a la app del frente:" << shortcut.toPortableString();
+}
+
 bool HotkeyService::probe(const Shortcut &shortcut)
 {
     const UInt32 key = nativeKey(shortcut.key);

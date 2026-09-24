@@ -86,6 +86,11 @@ NukeWatcher::~NukeWatcher()
     }
 }
 
+bool NukeWatcher::isNukeInFrontNow() const
+{
+    return isNukeApp([[NSWorkspace sharedWorkspace] frontmostApplication]);
+}
+
 QRect NukeWatcher::frontNukeFrame() const
 {
     NSRunningApplication *front = [[NSWorkspace sharedWorkspace] frontmostApplication];

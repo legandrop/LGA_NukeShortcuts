@@ -99,6 +99,11 @@ NukeWatcher::~NukeWatcher()
     }
 }
 
+bool NukeWatcher::isNukeInFrontNow() const
+{
+    return isNukeWindow(GetForegroundWindow());
+}
+
 QRect NukeWatcher::frontNukeFrame() const
 {
     const HWND foreground = GetForegroundWindow();

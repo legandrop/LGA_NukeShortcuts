@@ -197,10 +197,19 @@ QString TrayController::validateShortcut(ShortcutAction action, const Shortcut &
 
 void TrayController::onHotkey(int id)
 {
-    // Doble chequeo: el atajo solo esta registrado con Nuke al frente, pero el foco puede haber
-    // cambiado entre el registro y la tecla.
-    if (!m_watcher->nukeInFront()) {
-        qDebug() << "[TrayController] Atajo" << id << "con Nuke fuera del frente: se ignora";
+    // El atajo solo esta registrado con Nuke al frente, pero el aviso de "cambio de ventana" llega
+    // encolado: si el usuario lo aprieta justo al salir de Nuke, puede llegar aca estando en otra app.
+    // Se pregunta AHORA; si no es Nuke, se suelta el atajo (el estado lo hace al pasar a false) y la
+    // combinacion se le devuelve a la app del frente, como si esta app no existiera.
+    if (!m_watcher->isNukeInFrontNow()) {
+        const Shortcut shortcut =
+            m_state->shortcut(id == kAddKeyframeId ? ShortcutAction::AddKeyframe : ShortcutAction::FrameDopeSheet);
+        qInfo() << "[TrayController] Atajo" << shortcut.toPortableString() << "fuera de Nuke: se devuelve";
+        m_state->setNukeInFront(false);
+        m_hotkeys->unregisterAll();
+        if (!m_injector->dryRun()) {
+            m_hotkeys->passThrough(shortcut);
+        }
         return;
     }
     if (id == kAddKeyframeId) {

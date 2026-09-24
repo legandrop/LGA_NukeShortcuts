@@ -32,6 +32,11 @@ public:
     // enseguida. Sirve para rechazar un atajo nuevo que ya tiene otra app.
     bool probe(const Shortcut &shortcut);
 
+    // Le devuelve la combinacion a la app que esta al frente, como si esta app no existiera: manda la
+    // tecla con sus modificadores (aprieta los que el usuario ya solto y los suelta despues). Hay que
+    // llamarla con el atajo YA liberado, o la tecla simulada lo volveria a disparar.
+    void passThrough(const Shortcut &shortcut);
+
 signals:
     void activated(int id);
 

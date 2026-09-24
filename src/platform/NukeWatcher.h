@@ -27,7 +27,11 @@ public:
     explicit NukeWatcher(QObject *parent = nullptr);
     ~NukeWatcher() override;
 
+    // Lo ultimo que aviso el sistema (llega encolado, unos milisegundos despues del cambio).
     bool nukeInFront() const { return m_nukeInFront; }
+    // Pregunta AHORA cual es la ventana del frente, sin esperar el aviso. Lo usa el atajo antes de
+    // actuar: si el usuario acaba de salir de Nuke, el aviso todavia puede no haber llegado.
+    bool isNukeInFrontNow() const;
 
     // Marco de la ventana principal de Nuke que esta al frente. Vacio si Nuke no esta al frente.
     QRect frontNukeFrame() const;
