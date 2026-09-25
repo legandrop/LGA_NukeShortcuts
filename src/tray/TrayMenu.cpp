@@ -30,19 +30,26 @@ void refreshTrayMenu(const TrayMenuActions &actions, bool enabled)
     actions.toggle->setText(enabled ? QStringLiteral("Pause shortcuts") : QStringLiteral("Resume shortcuts"));
 }
 
-QPixmap trayIconPixmap(bool paused)
+QIcon trayIcon(bool paused)
 {
-    // El icono a color de la app, reducido con el filtro de QIcon. La version monocroma para la
-    // barra de menu de macOS (modo template) sale del sistema de iconos LGA: pendiente en el roadmap.
-    const QPixmap source = QIcon(QStringLiteral(":/icons/LGA_NukeShortcuts.png")).pixmap(QSize(64, 64));
-    if (!paused) {
-        return source;
+    // Un PNG por tamano (tools/icono/armar_tray.ps1): las planchas caen en pixeles enteros en cada uno
+    // y QIcon elige el que corresponde a la escala de la pantalla. Reducir el icono de la app dejaba el
+    // desregistro en menos de un pixel, un halo finito y borroso. La version monocroma para la barra de
+    // menu de macOS (modo template) sale del sistema de iconos LGA: pendiente en el roadmap.
+    QIcon icon;
+    for (int size : {16, 20, 24, 32, 40, 48}) {
+        const QPixmap source(QStringLiteral(":/icons/tray/tray_%1.png").arg(size));
+        if (!paused) {
+            icon.addPixmap(source);
+            continue;
+        }
+        QPixmap dimmed(source.size());
+        dimmed.fill(Qt::transparent);
+        QPainter painter(&dimmed);
+        painter.setOpacity(0.4);
+        painter.drawPixmap(0, 0, source);
+        painter.end();
+        icon.addPixmap(dimmed);
     }
-    QPixmap dimmed(source.size());
-    dimmed.fill(Qt::transparent);
-    QPainter painter(&dimmed);
-    painter.setOpacity(0.4);
-    painter.drawPixmap(0, 0, source);
-    painter.end();
-    return dimmed;
+    return icon;
 }

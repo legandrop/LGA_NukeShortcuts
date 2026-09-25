@@ -135,7 +135,7 @@ void TrayController::runFirstLaunchSetupIfNeeded()
 
 void TrayController::applyTrayIcon()
 {
-    m_tray->setIcon(QIcon(trayIconPixmap(!m_state->enabled())));
+    m_tray->setIcon(trayIcon(!m_state->enabled()));
 }
 
 void TrayController::refreshFromState()

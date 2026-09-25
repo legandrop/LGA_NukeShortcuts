@@ -3,6 +3,16 @@
 Cada entrada es una versión: se agrega arriba con el número siguiente (de a centésimos: 2.01, 2.02,
 2.03...) y después se corre `sync_version`, que lo lleva a `CMakeLists.txt` y a `VERSION`.
 
+v2.04:
+
+El icono de la bandeja se veía débil: era el de la app reducido, y a 16 px sus planchas quedaban
+corridas menos de medio píxel, un halo finito y borroso alrededor del cuerpo oscuro. Ahora es un PNG
+por tamaño (16 a 48 px) con el desregistro ajustado al píxel, la misma fórmula del tray de
+FolderSwitch: amarillo un paso a la izquierda, magenta uno arriba, cian medio paso abajo a la
+derecha, cuerpo #262626 en barra clara y oscura, centrado en píxeles enteros. En pausa sigue al 40 %.
+Los genera `tools/icono/armar_tray.ps1`, en PowerShell y sin Python.
+[ Icono - Bandeja con el desregistro ajustado al pixel ]
+
 v2.03:
 
 El icono era el mismo glifo de radiación de Nuke que usa OpenInNukeX, y además anterior a la marca

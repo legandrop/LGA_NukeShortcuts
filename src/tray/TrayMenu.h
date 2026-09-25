@@ -1,7 +1,7 @@
 #ifndef NUKESHORTCUTS_TRAYMENU_H
 #define NUKESHORTCUTS_TRAYMENU_H
 
-#include <QPixmap>
+#include <QIcon>
 
 class QAction;
 class QMenu;
@@ -22,7 +22,7 @@ struct TrayMenuActions
 TrayMenuActions buildTrayMenu(QMenu *menu);
 void refreshTrayMenu(const TrayMenuActions &actions, bool enabled);
 
-// Icono de la bandeja: el de la app, atenuado en pausa.
-QPixmap trayIconPixmap(bool paused);
+// Icono de la bandeja: los dos keys con el desregistro ajustado al pixel, atenuado en pausa.
+QIcon trayIcon(bool paused);
 
 #endif // NUKESHORTCUTS_TRAYMENU_H

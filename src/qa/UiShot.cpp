@@ -224,7 +224,7 @@ int runUiShot(const QStringList &args)
         for (const bool paused : {false, true}) {
             auto *icon = new QLabel(canvas.data());
             icon->setObjectName(paused ? QStringLiteral("trayIconPaused") : QStringLiteral("trayIconOn"));
-            QPixmap px = trayIconPixmap(paused).scaled(QSize(16, 16) * dpr, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+            QPixmap px = trayIcon(paused).pixmap(QSize(16, 16), dpr);
             px.setDevicePixelRatio(dpr);
             icon->setPixmap(px);
             icons->addWidget(icon);

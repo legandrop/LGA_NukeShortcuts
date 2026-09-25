@@ -2,6 +2,12 @@
 <RCC version="1.0">
     <qresource prefix="/">
         <file>icons/LGA_NukeShortcuts.png</file>
+        <file>icons/tray/tray_16.png</file>
+        <file>icons/tray/tray_20.png</file>
+        <file>icons/tray/tray_24.png</file>
+        <file>icons/tray/tray_32.png</file>
+        <file>icons/tray/tray_40.png</file>
+        <file>icons/tray/tray_48.png</file>
         <file>icons/check.png</file>
         <file>images/DopeSheetPos.png</file>
         <file>fonts/Inter-Regular.ttf</file>
