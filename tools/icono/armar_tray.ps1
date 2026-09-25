@@ -11,7 +11,9 @@
 # amarillo un paso a la izquierda, magenta uno arriba, cian medio paso abajo a la derecha (la misma
 # formula del tray de FolderSwitch). El cuerpo es la triple interseccion en #262626, igual sobre barra
 # clara y oscura: sobre la oscura el cuerpo se funde y la forma la dibuja el borde de color.
-# La geometria es la silueta F de armar_icono.py (dos rombos redondeados en un lienzo de 1024).
+# La geometria es la silueta F de armar_icono.py (dos rombos redondeados en un lienzo de 1024), con los
+# rombos mas juntos y el chico algo mas grande: la F es ancha y chata, y a 16 px solo ocupaba 14 x 11.
+# Asi entra mas grande en el cuadro (16 x 14) sin dejar de leerse como dos keys.
 $ErrorActionPreference = 'Stop'
 $raiz = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path))
 $salida = Join-Path $raiz 'resources\icons\tray'
@@ -49,7 +51,8 @@ public static class ArmarTray {
         return pts;
     }
 
-    static readonly List<double[]>[] Silueta = { Rombo(420, 512, 300, 60), Rombo(735, 512, 185, 60) };
+    // En el app-icon: Rombo(420, 512, 300, 60) y Rombo(735, 512, 185, 60).
+    static readonly List<double[]>[] Silueta = { Rombo(450, 512, 300, 60), Rombo(680, 512, 200, 60) };
 
     // Mascara de la silueta en el lienzo de n*SS: escala al lado del icono y corre (dx, dy) subpixeles.
     static bool[] Mascara(int n, double escala, double dx, double dy) {
@@ -128,8 +131,8 @@ public static class ArmarTray {
 }
 '@
 
-# Escala de la silueta dentro del cuadro: los dos keys son anchos, asi ocupan casi todo el lado.
-$escala = 1.06
+# Escala de la silueta dentro del cuadro: con los colores, el ancho llega justo al lado del icono.
+$escala = 1.30
 New-Item -ItemType Directory -Force $salida | Out-Null
 foreach ($n in 16, 20, 24, 32, 40, 48) {
     [ArmarTray]::Icono($n, $escala, (Join-Path $salida "tray_$n.png"))

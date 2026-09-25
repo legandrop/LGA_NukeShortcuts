@@ -3,6 +3,13 @@
 Cada entrada es una versión: se agrega arriba con el número siguiente (de a centésimos: 2.01, 2.02,
 2.03...) y después se corre `sync_version`, que lo lleva a `CMakeLists.txt` y a `VERSION`.
 
+v2.05:
+
+En la bandeja los dos keys quedaban chicos: la silueta es ancha y chata, y a 16 px ocupaba 14 x 11 del
+cuadro. Solo en el tray, los rombos van más juntos y el chico un poco más grande, así la silueta entra
+más grande (16 x 14) sin dejar de leerse como dos keys. El app-icon sigue con los rombos originales.
+[ Icono - Keys mas juntos y mas grandes en la bandeja ]
+
 v2.04:
 
 El icono de la bandeja se veía débil: era el de la app reducido, y a 16 px sus planchas quedaban
