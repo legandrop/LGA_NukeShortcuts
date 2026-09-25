@@ -15,7 +15,7 @@ namespace {
 // En esta app nada toma foco de teclado: Tab no recorre controles y ningun boton queda marcado al
 // abrir una ventana. Se aplica a TODO widget al pulirse (antes de mostrarse por primera vez), asi
 // tambien cubre los QMessageBox y el progreso del update. La excepcion son los campos donde se
-// escribe texto (WA_InputMethodEnabled), que hoy la app no tiene.
+// escribe texto (WA_InputMethodEnabled): hoy, el umbral de cada disco en la tarjeta "Disk space".
 class NoKeyboardFocus : public QObject
 {
 public:
@@ -142,6 +142,35 @@ QLabel#recorderDot { background-color: @accent; border-radius: 3px; min-width: 6
 /* Tarjeta del Dope Sheet */
 QLabel#spotValue { color: @text; font-size: @fs13_5; }
 
+/* Tarjeta de espacio en disco. Los controles con borde miden 24 de alto: 22 de contenido + borde. */
+QLabel#caption[tone="warn"] { color: @warn; }
+ElidedLabel#driveName { color: @text; font-size: @fs13_5; }
+ElidedLabel#driveName[dim="true"] { color: @icon; }
+QSpinBox#threshold {
+    background-color: @field; border: 1px solid @fieldBorder; border-radius: 3px; color: @textStrong;
+    font-size: @fs12_5; padding: 0px 7px 0px 4px; selection-background-color: #393455; selection-color: @textBright;
+}
+QSpinBox#threshold:focus { border-color: @accent; }
+QPushButton#segButton {
+    background-color: #2b2b2b; border: 1px solid #383838; border-radius: 0px; color: @textMuted;
+    padding: 0px 7px; min-height: 22px; max-height: 22px; font-size: @fs11_5; font-weight: 600;
+}
+QPushButton#segButton[pos="left"] { border-top-left-radius: 4px; border-bottom-left-radius: 4px; }
+QPushButton#segButton[pos="right"] { border-top-right-radius: 4px; border-bottom-right-radius: 4px; border-left: none; }
+QPushButton#segButton:hover { background-color: #333333; }
+QPushButton#segButton:checked { background-color: #393455; border: 1px solid #4c4770; color: #DDDBEE; }
+QPushButton#segButton[pos="right"]:checked { border-left: 1px solid #4c4770; }
+QPushButton#fieldButton {
+    background-color: @field; border: 1px solid @fieldBorder; border-radius: 3px; color: @textStrong;
+    padding: 0px 6px 0px 8px; min-height: 22px; max-height: 22px; font-size: @fs12_5; font-weight: 400;
+}
+QPushButton#fieldButton:hover { border-color: #3d3d3d; background-color: #1f1f1f; }
+QPushButton#linkButton {
+    background-color: transparent; border: none; color: @link; padding: 0px; min-height: 24px; max-height: 24px;
+    font-size: @fs13; font-weight: 500; text-align: left;
+}
+QPushButton#linkButton:hover { color: #b9aef0; }
+
 /* Calibrador: pasos numerados con la caja violeta (badges del Shot Player) y la burbuja que sigue
    al puntero. */
 QLabel#stepBadge { background-color: #443a91; color: #ffffff; border-radius: 4px; min-width: 22px; max-width: 22px; min-height: 22px; max-height: 22px; font-size: @fs11; font-weight: 600; }
@@ -228,7 +257,7 @@ QFrame#helpRule { background-color: @border; border: none; min-height: 1px; max-
         {"@textStrong", kTextStrong}, {"@textBright", kTextBright}, {"@textMuted", kTextMuted},
         {"@textCaption", kTextCaption}, {"@textFaint", kTextFaint}, {"@textPlaceholder", kTextPlaceholder},
         {"@link", kLink}, {"@text", kText}, {"@ok", kOk}, {"@error", kError}, {"@warn", kWarn},
-        {"@accent", kAccent},
+        {"@accent", kAccent}, {"@icon", kIcon},
         {"@fs13_5", fs(13.5)}, {"@fs12_5", fs(12.5)}, {"@fs11_5", fs(11.5)}, {"@fs11", fs(11)},
         {"@fs20", fs(20)}, {"@fs16", fs(16)}, {"@fs14", fs(14)}, {"@fs13", fs(13)}, {"@fs12", fs(12)},
     };

@@ -2,6 +2,7 @@
 
 #include "platform/AutoStart.h"
 #include "platform/SystemInput.h"
+#include "ui/DiskCard.h"
 #include "ui/Theme.h"
 #include "ui/TitleBar.h"
 #include "ui/UiWidgets.h"
@@ -222,7 +223,11 @@ void MainWindow::buildUi()
     spot->addLayout(spotRow);
     layout->addWidget(spotCard);
 
-    // ---------- Tarjeta 4: la app ----------
+    // ---------- Tarjeta 4: espacio en disco ----------
+    m_diskCard = new DiskCard(m_state, m_mode == Mode::Normal, content);
+    layout->addWidget(m_diskCard);
+
+    // ---------- Tarjeta 5: la app ----------
     auto *appCard = card(content);
     auto *appOptions = new QVBoxLayout(appCard);
     appOptions->setContentsMargins(14, 12, 14, 12);
@@ -282,6 +287,7 @@ void MainWindow::connectWrites()
     connect(m_autoStartCheck, &QCheckBox::toggled, this, &MainWindow::onAutoStartToggled);
     connect(m_updatesCheck, &QCheckBox::toggled, m_state, &AppState::setCheckUpdatesAtStartup);
     connect(m_checkNowButton, &QPushButton::clicked, this, &MainWindow::checkUpdatesRequested);
+    connect(m_diskCard, &DiskCard::drivesRefreshRequested, this, &MainWindow::driveListRequested);
 }
 
 MainWindow::Status MainWindow::currentStatus() const
@@ -377,6 +383,7 @@ void MainWindow::refresh()
         m_spotCaption->setText(QStringLiteral("Frame Dope Sheet needs it. Takes one click."));
     }
     m_spotThumb->setSpot(m_state->hasDopeSheetSpot(), m_state->dopeSheetSpot());
+    m_diskCard->refresh();
 
     // Reflejar no es escribir: sin senales, setChecked no llega a AppState.
     m_updatesCheck->blockSignals(true);
@@ -474,6 +481,11 @@ void MainWindow::changeEvent(QEvent *event)
     // siguiente combinacion que el usuario apriete en OTRA app terminaria guardada como atajo.
     if (event->type() == QEvent::ActivationChange && !isActiveWindow()) {
         cancelRecordings();
+        // El umbral de un disco a medio escribir se confirma y el campo se suelta: al volver, el
+        // cursor no queda titilando adentro.
+        if (QWidget *focused = focusWidget()) {
+            focused->clearFocus();
+        }
     }
     QMainWindow::changeEvent(event);
 }
@@ -490,6 +502,9 @@ void MainWindow::showEvent(QShowEvent *event)
     // Estado real en cada apertura: un cambio hecho por fuera (Task Manager > Startup, Ajustes de
     // macOS, otra copia de la app) tiene que verse sin reiniciar.
     syncAutoStartCheck();
+    if (m_mode == Mode::Normal) {
+        emit diskReadingsRequested();
+    }
     QMainWindow::showEvent(event);
 }
 

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 # Unica fuente de verdad del numero de version: el codigo lo lee de NUKESHORTCUTS_VERSION, y el
 # Info.plist, el instalador y el zip lo derivan de aca. La mueve sync_version desde el changelog, de a
 # centesimos (2.01, 2.02...). La 1.x es la version AutoHotkey (Legacy_AHK/).
-project(LGA_NukeShortcuts VERSION 2.05 LANGUAGES CXX)
+project(LGA_NukeShortcuts VERSION 2.06 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -63,16 +63,20 @@ set(SOURCES
     src/core/AppState.cpp
     src/core/BuildTree.cpp
     src/core/DebugFlags.cpp
+    src/core/DiskMonitor.cpp
+    src/core/DiskSpace.cpp
     src/core/LgaRegistry.cpp
     src/core/Shortcut.cpp
     src/platform/AutoStartCommon.cpp
     src/platform/InputInjectorCommon.cpp
+    src/platform/LocalDrivesCommon.cpp
     src/platform/NukeWatcherCommon.cpp
     src/qa/UiShot.cpp
     src/tray/TrayController.cpp
     src/tray/TrayMenu.cpp
     src/ui/CalibrationDialog.cpp
     src/ui/CalibrationSession.cpp
+    src/ui/DiskCard.cpp
     src/ui/HelpDialog.cpp
     src/ui/MainWindow.cpp
     src/ui/ShortcutRow.cpp
@@ -89,11 +93,14 @@ set(HEADERS
     src/core/AppState.h
     src/core/BuildTree.h
     src/core/DebugFlags.h
+    src/core/DiskMonitor.h
+    src/core/DiskSpace.h
     src/core/LgaRegistry.h
     src/core/Shortcut.h
     src/platform/AutoStart.h
     src/platform/HotkeyService.h
     src/platform/InputInjector.h
+    src/platform/LocalDrives.h
     src/platform/NukeWatcher.h
     src/platform/SystemInput.h
     src/qa/UiShot.h
@@ -101,6 +108,7 @@ set(HEADERS
     src/tray/TrayMenu.h
     src/ui/CalibrationDialog.h
     src/ui/CalibrationSession.h
+    src/ui/DiskCard.h
     src/ui/HelpDialog.h
     src/ui/MainWindow.h
     src/ui/ShortcutRow.h
@@ -116,6 +124,7 @@ if(WIN32)
         src/platform/win/AutoStartWin.cpp
         src/platform/win/HotkeyServiceWin.cpp
         src/platform/win/InputInjectorWin.cpp
+        src/platform/win/LocalDrivesWin.cpp
         src/platform/win/NukeWatcherWin.cpp
         src/platform/win/RegistryHelper.cpp
         src/platform/win/SystemInputWin.cpp
@@ -133,6 +142,7 @@ elseif(APPLE)
         src/platform/mac/AutoStartMac.mm
         src/platform/mac/HotkeyServiceMac.cpp
         src/platform/mac/InputInjectorMac.cpp
+        src/platform/mac/LocalDrivesMac.cpp
         src/platform/mac/NukeWatcherMac.mm
         src/platform/mac/SystemInputMac.cpp
     )

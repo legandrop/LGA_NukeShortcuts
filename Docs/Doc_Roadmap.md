@@ -8,12 +8,20 @@ Lo que falta, ordenado por importancia. Lo hecho se borra de acá; la historia q
 Add keyframe, el calibrador, Frame Dope Sheet y el inicio con Windows ya andan con Nuke 15.1 y
 NukeX 17.0. Falta grabar un atajo nuevo y ver el rechazo de uno tomado.
 
+Aviso de espacio en disco (v2.06): la tarjeta y el campo del umbral ya andan. Falta probar:
+
+- La notificación de Windows con un umbral por encima del espacio libre, y que el click abra Settings.
+- Un disco USB desenchufado y vuelto a enchufar.
+- Con cuatro o más discos la ventana pasa los 1000 px: si no entra en la pantalla, la lista necesita
+  scroll o un tope de alto.
+
 ## 2. macOS
 
 El código de mac está escrito pero nunca se compiló.
 
 1. Compilar con `./compilar.sh --no-run` en la Mac, o con el workflow manual `Build macOS` de GitHub
-   Actions, y corregir lo que salga.
+   Actions, y corregir lo que salga. Incluye `platform/mac/LocalDrivesMac.cpp` (discos de `/Volumes`)
+   y ver cómo sale la notificación de disco bajo en el Centro de notificaciones.
 2. Probar el permiso de Accesibilidad, los atajos (`⌘` en lugar de Ctrl), los clicks y el calibrador.
    En mac la burbuja del calibrador solo reconoce a Nuke cuando ya está al frente: revisar si alcanza.
 3. Decisiones D-02 a D-05.

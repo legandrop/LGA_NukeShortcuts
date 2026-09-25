@@ -133,6 +133,8 @@ HelpDialog::HelpDialog(const Shortcut &addKeyframe, const Shortcut &frameDopeShe
         QStringLiteral("Calibrate the %1 once: one click on an empty spot.").arg(strong(QStringLiteral("Dope Sheet"))),
         QStringLiteral("Press %1 to select every key in the Dope Sheet and frame them.")
             .arg(strong(frameDopeSheet.displayText())),
+        QStringLiteral("Under %1, add the drives to watch: you get a notification when one runs low.")
+            .arg(strong(QStringLiteral("Disk space"))),
     };
     auto *stepsBox = new QVBoxLayout();
     stepsBox->setSpacing(4);

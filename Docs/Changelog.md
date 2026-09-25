@@ -3,6 +3,17 @@
 Cada entrada es una versión: se agrega arriba con el número siguiente (de a centésimos: 2.01, 2.02,
 2.03...) y después se corre `sync_version`, que lo lleva a `CMakeLists.txt` y a `VERSION`.
 
+v2.06:
+
+Faltaba avisar cuando un disco se queda sin espacio. Settings suma la tarjeta «Disk space»: se eligen
+los discos locales a vigilar, cada uno con su umbral en GB o en %, y un intervalo único (15 min por
+defecto). El campo del umbral se activa solo con un click, y Enter, Escape o un click afuera lo
+sueltan. Cada disco muestra una barra de uso con una marca en el umbral, y la ventana crece con cada
+disco. Al cruzar el umbral sale una notificación de Windows, que se repite cada 6 h mientras el disco
+siga bajo, y el menú de la bandeja suma una línea ámbar que abre Settings. El chequeo lee solo los
+discos vigilados, para no despertar los que están dormidos; uno desenchufado se saltea sin avisar.
+[ Discos - Aviso de espacio libre por disco ]
+
 v2.05:
 
 En la bandeja los dos keys quedaban chicos: la silueta es ancha y chata, y a 16 px ocupaba 14 x 11 del

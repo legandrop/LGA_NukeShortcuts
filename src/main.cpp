@@ -1,5 +1,8 @@
 #include "actions/ActionRunner.h"
 #include "core/AppPaths.h"
+#include "core/AppState.h"
+#include "core/DiskMonitor.h"
+#include "core/DiskSpace.h"
 #include "core/BuildTree.h"
 #include "core/DebugFlags.h"
 #include "core/LgaRegistry.h"
@@ -123,6 +126,129 @@ int runSelfTest()
     const QPointF invalid = ActionRunner::nativeToSpot(QRect(), click);
     check(invalid.x() < 0, QStringLiteral("marco vacio no da un punto valido"));
 
+    // ---- Espacio en disco: umbral, formato y cuando avisar.
+    constexpr qint64 kGiB = qint64(1024) * 1024 * 1024;
+    DriveInfo cache;
+    cache.root = QStringLiteral("D:/");
+    cache.label = QStringLiteral("D:");
+    cache.totalBytes = 2000 * kGiB;
+    cache.freeBytes = 99 * kGiB;
+    DiskWatch gb{QStringLiteral("D:/"), 100, DiskWatch::Unit::GB, QString()};
+    check(DiskSpace::isLow(gb, cache), QStringLiteral("99 GB libres con umbral 100 GB: bajo"));
+    cache.freeBytes = 100 * kGiB;
+    check(!DiskSpace::isLow(gb, cache), QStringLiteral("100 GB libres con umbral 100 GB: justo en el borde no esta bajo"));
+    DiskWatch pct{QStringLiteral("D:/"), 5, DiskWatch::Unit::Percent, QString()};
+    check(!DiskSpace::isLow(pct, cache), QStringLiteral("100 GB de 2000 (5%) con umbral 5%: justo en el borde no esta bajo"));
+    cache.freeBytes = 99 * kGiB;
+    check(DiskSpace::isLow(pct, cache), QStringLiteral("99 GB de 2000 con umbral 5%: bajo"));
+    pct.value = 4;
+    check(!DiskSpace::isLow(pct, cache), QStringLiteral("99 GB de 2000 con umbral 4%: no esta bajo"));
+    DriveInfo unread;
+    check(!DiskSpace::isLow(gb, unread), QStringLiteral("disco sin lectura: nunca bajo"));
+    check(DiskSpace::clampValue(0, DiskWatch::Unit::GB) == 1 && DiskSpace::clampValue(150, DiskWatch::Unit::Percent) == 99,
+          QStringLiteral("umbral acotado: 0 GB -> 1, 150% -> 99"));
+    check(DiskSpace::formatBytes(182 * kGiB) == QLatin1String("182 GB"), QStringLiteral("formato: 182 GB"));
+    check(DiskSpace::formatBytes(1863 * kGiB) == QLatin1String("1.82 TB"),
+          QStringLiteral("formato: 1863 GiB -> '%1'").arg(DiskSpace::formatBytes(1863 * kGiB)));
+    check(DiskSpace::formatBytes(2048 * kGiB) == QLatin1String("2 TB"), QStringLiteral("formato: 2 TB sin decimales de mas"));
+    check(DiskSpace::formatBytes(kGiB / 2) == QLatin1String("512 MB"), QStringLiteral("formato: 512 MB"));
+    check(DiskSpace::thresholdText(pct) == QLatin1String("4%"), QStringLiteral("texto del umbral en %"));
+    DiskWatch::Unit unit = DiskWatch::Unit::GB;
+    check(DiskSpace::unitFromString(QStringLiteral("%"), &unit) && unit == DiskWatch::Unit::Percent,
+          QStringLiteral("unidad leida del .ini: %"));
+    check(!DiskSpace::unitFromString(QStringLiteral("gb"), &unit), QStringLiteral("unidad invalida rechazada: gb en minuscula"));
+    check(DiskSpace::isValidInterval(15) && !DiskSpace::isValidInterval(7), QStringLiteral("intervalo: 15 vale, 7 no"));
+    check(DiskSpace::intervalText(360) == QLatin1String("6 hours") && DiskSpace::intervalText(60) == QLatin1String("1 hour"),
+          QStringLiteral("texto del intervalo en horas"));
+
+    const QDateTime t0(QDate(2026, 9, 24), QTime(12, 0));
+    DiskSpace::AlertState alert;
+    check(DiskSpace::shouldNotify(true, alert, t0), QStringLiteral("aviso: cruza el umbral"));
+    check(!DiskSpace::shouldNotify(false, alert, t0), QStringLiteral("aviso: no bajo, no avisa"));
+    alert.wasLow = true;
+    alert.lastNotified = t0;
+    check(!DiskSpace::shouldNotify(true, alert, t0.addSecs(5 * 3600)), QStringLiteral("aviso: sigue bajo a las 5 h, no repite"));
+    check(DiskSpace::shouldNotify(true, alert, t0.addSecs(6 * 3600)), QStringLiteral("aviso: sigue bajo a las 6 h, repite"));
+    alert.wasLow = false;
+    check(DiskSpace::shouldNotify(true, alert, t0.addSecs(60)), QStringLiteral("aviso: subio y volvio a bajar, avisa al cruzar"));
+
+    // ---- DiskMonitor entero con discos falsos y un reloj que se adelanta a mano.
+    {
+        AppState state(AppState::Persistence::None);
+        state.addDiskWatch(QStringLiteral("C:/"), QStringLiteral("Windows"));
+        state.setDiskThreshold(QStringLiteral("C:/"), 10, DiskWatch::Unit::Percent);
+        state.addDiskWatch(QStringLiteral("D:/"), QStringLiteral("Cache"));
+        const QList<DiskWatch> watches = state.diskWatches();
+        check(watches.size() == 2 && watches.at(1).unit == DiskWatch::Unit::Percent && watches.at(1).value == 10,
+              QStringLiteral("un disco nuevo toma el umbral del ultimo (10%)"));
+        state.addDiskWatch(QStringLiteral("D:/"), QStringLiteral("Cache"));
+        check(state.diskWatches().size() == 2, QStringLiteral("el mismo disco no se agrega dos veces"));
+
+        QHash<QString, DriveInfo> disks;
+        DriveInfo c;
+        c.root = QStringLiteral("C:/");
+        c.label = QStringLiteral("C:");
+        c.totalBytes = 1000 * kGiB;
+        c.freeBytes = 500 * kGiB;
+        disks.insert(c.root, c);
+        DriveInfo d = c;
+        d.root = QStringLiteral("D:/");
+        d.label = QStringLiteral("D:");
+        d.freeBytes = 50 * kGiB; // 5%: bajo con el 10%
+        disks.insert(d.root, d);
+        QDateTime clock = t0;
+        DiskMonitor::Sources sources;
+        sources.listAll = [&disks]() { return disks.values(); };
+        sources.query = [&disks](const QString &root, DriveInfo *drive) {
+            if (!disks.contains(root)) {
+                return false;
+            }
+            *drive = disks.value(root);
+            return true;
+        };
+        sources.now = [&clock]() { return clock; };
+        DiskMonitor monitor(&state, sources);
+        QStringList notified;
+        QObject::connect(&monitor, &DiskMonitor::lowSpace,
+                         [&notified](const DriveInfo &drive, const DiskWatch &) { notified.append(drive.root); });
+
+        monitor.checkNow(false);
+        check(notified.isEmpty() && state.lowWatches().size() == 1,
+              QStringLiteral("monitor: la lectura sin aviso marca D: bajo y no notifica"));
+        monitor.checkNow(true);
+        check(notified == QStringList{QStringLiteral("D:/")}, QStringLiteral("monitor: primer chequeo avisa D: y no C:"));
+        clock = clock.addSecs(15 * 60);
+        monitor.checkNow(true);
+        check(notified.size() == 1, QStringLiteral("monitor: 15 min despues, sigue bajo y no repite"));
+        clock = clock.addSecs(6 * 3600);
+        monitor.checkNow(true);
+        check(notified.size() == 2, QStringLiteral("monitor: 6 h despues, repite"));
+        disks.remove(QStringLiteral("D:/"));
+        clock = clock.addSecs(6 * 3600);
+        monitor.checkNow(true);
+        check(notified.size() == 2 && state.lowWatches().isEmpty(),
+              QStringLiteral("monitor: D: desenchufado no avisa ni cuenta como bajo"));
+        d.freeBytes = 400 * kGiB;
+        disks.insert(d.root, d);
+        clock = clock.addSecs(60);
+        monitor.checkNow(true);
+        check(notified.size() == 2, QStringLiteral("monitor: D: vuelve con espacio, no avisa"));
+        d.freeBytes = 20 * kGiB;
+        disks.insert(d.root, d);
+        clock = clock.addSecs(60);
+        monitor.checkNow(true);
+        check(notified.size() == 3, QStringLiteral("monitor: D: vuelve a bajar, avisa de nuevo al cruzar"));
+        state.setDiskThreshold(QStringLiteral("D:/"), 1, DiskWatch::Unit::Percent);
+        clock = clock.addSecs(7 * 3600);
+        monitor.checkNow(true);
+        check(notified.size() == 3, QStringLiteral("monitor: con el umbral en 1% (2% libre), D: ya no esta bajo"));
+        state.removeDiskWatch(QStringLiteral("C:/"));
+        check(state.diskWatches().size() == 1 && !state.isWatched(QStringLiteral("C:/")),
+              QStringLiteral("dejar de vigilar C:"));
+        monitor.refreshAll();
+        check(state.drives().size() == 2, QStringLiteral("el listado completo trae tambien los discos sin vigilar"));
+    }
+
     std::printf("%s: %d fallas\n", failures == 0 ? "self-test ok" : "self-test FALLO", failures);
     return failures == 0 ? 0 : 1;
 }
@@ -192,7 +318,8 @@ int main(int argc, char *argv[])
 
     // --ui-shot no escribe en el debug.log: una captura no deja rastros fuera del PNG y su .json.
     const bool uiShot = hasArg(argc, argv, "--ui-shot");
-    if (!uiShot) {
+    const bool uiProbe = hasArg(argc, argv, "--ui-probe");
+    if (!uiShot && !uiProbe) {
         qInstallMessageHandler(fileMessageHandler);
     }
     qDebug() << kBuildVersionMarker;
@@ -207,6 +334,10 @@ int main(int argc, char *argv[])
     if (uiShot) {
         applyAppStyle(app);
         return runUiShot(app.arguments());
+    }
+    if (uiProbe) {
+        applyAppStyle(app);
+        return runUiProbe(app.arguments());
     }
 
     // Instancia unica.

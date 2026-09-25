@@ -1,5 +1,8 @@
 #include "tray/TrayMenu.h"
 
+#include "core/AppState.h"
+#include "ui/Theme.h"
+
 #include <QAction>
 #include <QIcon>
 #include <QMenu>
@@ -12,7 +15,9 @@ TrayMenuActions buildTrayMenu(QMenu *menu)
     a.header = menu->addAction(QString());
     a.header->setEnabled(false);
     a.toggle = menu->addAction(QString());
-    menu->addSeparator();
+    a.diskSeparator = menu->addSeparator();
+    a.diskSeparator->setVisible(false);
+    a.mainSeparator = menu->addSeparator();
     a.settings = menu->addAction(QStringLiteral("Settings..."));
     a.calibrate = menu->addAction(QStringLiteral("Calibrate Dope Sheet..."));
     a.updates = menu->addAction(QStringLiteral("Check for Updates..."));
@@ -28,6 +33,40 @@ void refreshTrayMenu(const TrayMenuActions &actions, bool enabled)
 {
     actions.header->setText(enabled ? QStringLiteral("Nuke Shortcuts · On") : QStringLiteral("Nuke Shortcuts · Paused"));
     actions.toggle->setText(enabled ? QStringLiteral("Pause shortcuts") : QStringLiteral("Resume shortcuts"));
+}
+
+QStringList diskWarningLines(const AppState &state)
+{
+    QStringList lines;
+    for (const DiskWatch &watch : state.lowWatches()) {
+        DriveInfo drive;
+        state.driveReading(watch.root, &drive);
+        lines.append(QStringLiteral("%1 is low · %2 free").arg(drive.label, DiskSpace::formatBytes(drive.freeBytes)));
+    }
+    return lines;
+}
+
+void refreshTrayDiskWarnings(QMenu *menu, TrayMenuActions &actions, const QStringList &lines)
+{
+    qDeleteAll(actions.diskWarnings);
+    actions.diskWarnings.clear();
+    // Punto ambar: el QSS no puede teñir el texto de UNA accion.
+    QPixmap dot(16, 16);
+    dot.fill(Qt::transparent);
+    {
+        QPainter painter(&dot);
+        painter.setRenderHint(QPainter::Antialiasing, true);
+        painter.setPen(Qt::NoPen);
+        painter.setBrush(Theme::color(Theme::kWarn));
+        painter.drawEllipse(QRectF(4, 4, 8, 8));
+    }
+    const QIcon icon(dot);
+    for (const QString &line : lines) {
+        auto *action = new QAction(icon, line, menu);
+        menu->insertAction(actions.mainSeparator, action);
+        actions.diskWarnings.append(action);
+    }
+    actions.diskSeparator->setVisible(!lines.isEmpty());
 }
 
 QIcon trayIcon(bool paused)

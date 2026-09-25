@@ -9,6 +9,7 @@
 #include <functional>
 
 class Chip;
+class DiskCard;
 class QCheckBox;
 class QFrame;
 class QLabel;
@@ -20,7 +21,8 @@ class TitleBar;
 //  1. Estado: activos / en pausa / un atajo tomado / falta el permiso (mac).
 //  2. Shortcuts: las dos acciones, cada una con sus teclas y el lapiz para cambiarlas.
 //  3. Dope Sheet position: el punto guardado sobre la captura del layout de Nuke y "Calibrate...".
-//  4. La app: inicio con la sesion y updates.
+//  4. Disk space: el chequeo de espacio libre (DiskCard).
+//  5. La app: inicio con la sesion y updates.
 // Todo lo que muestra sale de AppState; lo que el usuario cambia se escribe en AppState (o en
 // AutoStart). Cerrar no cierra la app: oculta la ventana a la bandeja (closeEvent).
 class MainWindow : public QMainWindow
@@ -37,6 +39,7 @@ public:
 
     TitleBar *titleBar() const { return m_titleBar; }
     ShortcutRow *shortcutRow(ShortcutAction action) const;
+    DiskCard *diskCard() const { return m_diskCard; }
 
     // Quien valida un atajo nuevo (lo arma TrayController con HotkeyService::probe).
     using ShortcutValidator = std::function<QString(ShortcutAction, const Shortcut &)>;
@@ -52,6 +55,10 @@ signals:
     void checkUpdatesRequested();
     void calibrateRequested();
     void accessibilityRequested();
+    // Hace falta leer los discos: se abrio Settings (numeros al dia) o el menu "Add drive..."
+    // (listado completo).
+    void diskReadingsRequested();
+    void driveListRequested();
 
 protected:
     void closeEvent(QCloseEvent *event) override;
@@ -99,6 +106,8 @@ private:
     QLabel *m_spotValue = nullptr;
     QLabel *m_spotCaption = nullptr;
     QPushButton *m_calibrateButton = nullptr;
+
+    DiskCard *m_diskCard = nullptr;
 
     QCheckBox *m_autoStartCheck = nullptr;
     QCheckBox *m_updatesCheck = nullptr;

@@ -42,6 +42,9 @@ inline constexpr const char *kLink = "#9D8FE0";
 inline constexpr const char *kOk = "#a8d86a";
 inline constexpr const char *kWarn = "#d4a437";
 inline constexpr const char *kError = "#e8836f";
+// Barra de uso de un disco: lo ocupado, y la marca del umbral cuando el disco esta bajo.
+inline constexpr const char *kBarFill = "#4e4e4e";
+inline constexpr const char *kWarnMark = "#e6c56b";
 
 inline QColor color(const char *hex) { return QColor(QLatin1String(hex)); }
 

@@ -56,6 +56,11 @@ El trabajo pendiente está en [`Doc_Roadmap.md`](Doc_Roadmap.md).
 
 ## Decididas
 
+- **2026-09-24 · D-07: aviso de espacio en disco, opción A del diseño.** Tarjeta «Disk space» en
+  Settings con una fila por disco que crece con cada uno (no un diálogo aparte ni un umbral compartido).
+  Intervalo único en un desplegable (1, 5, 15, 30 min, 1 h, 6 h; 15 min por defecto). El aviso sale al
+  cruzar el umbral y se repite cada 6 h mientras siga bajo. Se ofrecen discos fijos y removibles, nunca
+  de red. Un disco nuevo arranca en 50 GB, o con el umbral del último agregado.
 - **2026-09-24 · D-01: la versión Qt vive en este repo.** La versión AutoHotkey pasa a `Legacy_AHK/`,
   donde sigue funcionando, y la raíz toma la estructura de las otras apps LGA.
 - **2026-09-24 · D-06: instalador con todo, como las otras apps LGA.** Instalador Inno con cierre por

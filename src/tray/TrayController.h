@@ -11,6 +11,7 @@
 
 class ActionRunner;
 class CalibrationSession;
+class DiskMonitor;
 class HotkeyService;
 class InputInjector;
 class MainWindow;
@@ -27,6 +28,7 @@ class UpdateService;
 //  - HotkeyService -> ActionRunner: cada atajo dispara su secuencia de clicks y teclas.
 //  - El calibrador (dialogo + CalibrationSession) -> AppState::dopeSheetSpot.
 //  - En macOS, el permiso de Accesibilidad -> AppState::accessibilityGranted.
+//  - DiskMonitor -> la notificacion de disco bajo y sus lineas en el menu.
 class TrayController : public QObject
 {
     Q_OBJECT
@@ -55,6 +57,8 @@ private:
     void refreshAccessibility();
     void openAccessibilitySettings();
     void showHelp();
+    void refreshDiskWarnings();
+    void notifyLowSpace(const DriveInfo &drive, const DiskWatch &watch);
     // Primer arranque de una copia INSTALADA: activa el inicio con la sesion una sola vez y abre
     // Settings para que se vea. Desde build/ o deploy/ no hace nada.
     void runFirstLaunchSetupIfNeeded();
@@ -72,6 +76,8 @@ private:
     bool m_windowWasVisibleBeforeCalibration = false;
     QTimer *m_accessibilityTimer = nullptr;
     UpdateService *m_updateService = nullptr;
+    DiskMonitor *m_diskMonitor = nullptr;
+    QStringList m_diskWarningLines;
 
     // Lo que quedo registrado para cada accion, para re-registrar si el usuario cambia el atajo.
     Shortcut m_registeredAddKeyframe;

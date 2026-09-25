@@ -2,9 +2,11 @@
 
 #include "actions/ActionRunner.h"
 #include "core/AppSettings.h"
+#include "core/DiskMonitor.h"
 #include "platform/AutoStart.h"
 #include "platform/HotkeyService.h"
 #include "platform/InputInjector.h"
+#include "platform/LocalDrives.h"
 #include "platform/NukeWatcher.h"
 #include "platform/SystemInput.h"
 #include "ui/CalibrationDialog.h"
@@ -36,6 +38,11 @@ constexpr int kFrameDopeSheetId = 2;
 // En macOS el permiso de Accesibilidad no avisa cuando cambia: se consulta cada tanto.
 constexpr int kAccessibilityPollMs = 2000;
 
+// Primer chequeo de discos que puede avisar: un rato despues de arrancar, para no sumar una
+// notificacion al inicio de la sesion.
+constexpr int kFirstDiskCheckMs = 20000;
+constexpr int kDiskNotificationMs = 10000;
+
 int hotkeyId(ShortcutAction action)
 {
     return action == ShortcutAction::AddKeyframe ? kAddKeyframeId : kFrameDopeSheetId;
@@ -64,10 +71,21 @@ TrayController::TrayController(bool dryRunInput, QObject *parent)
     connect(m_window, &MainWindow::checkUpdatesRequested, this, &TrayController::checkForUpdatesManual);
     connect(m_window, &MainWindow::accessibilityRequested, this, &TrayController::openAccessibilitySettings);
 
+    DiskMonitor::Sources diskSources;
+    diskSources.listAll = &LocalDrives::list;
+    diskSources.query = &LocalDrives::query;
+    m_diskMonitor = new DiskMonitor(m_state, diskSources, this);
+    connect(m_diskMonitor, &DiskMonitor::lowSpace, this, &TrayController::notifyLowSpace);
+    connect(m_window, &MainWindow::diskReadingsRequested, m_diskMonitor, [this]() { m_diskMonitor->checkNow(false); });
+    connect(m_window, &MainWindow::driveListRequested, m_diskMonitor, &DiskMonitor::refreshAll);
+
     m_tray = new QSystemTrayIcon(this);
     m_tray->setContextMenu(m_menu);
     connect(m_tray, &QSystemTrayIcon::activated, this,
             [this](QSystemTrayIcon::ActivationReason reason) { onTrayActivated(static_cast<int>(reason)); });
+    // Las notificaciones de la app llevan a Settings: la de disco bajo muestra ahi el disco, y la
+    // de "calibrate first", el boton para calibrar.
+    connect(m_tray, &QSystemTrayIcon::messageClicked, this, &TrayController::showSettings);
 
     m_watcher = new NukeWatcher(this);
     m_hotkeys = new HotkeyService(this);
@@ -87,6 +105,7 @@ TrayController::TrayController(bool dryRunInput, QObject *parent)
     connect(m_state, &AppState::changed, this, &TrayController::refreshFromState);
     refreshFromState();
     m_tray->show();
+    m_diskMonitor->start(kFirstDiskCheckMs);
     if (m_injector->dryRun()) {
         qWarning() << "[TrayController] dryRunInput activo: las acciones solo loguean, no tocan el mouse ni el teclado";
     }
@@ -144,8 +163,39 @@ void TrayController::refreshFromState()
     const bool enabled = m_state->enabled();
     refreshTrayMenu(m_menuActions, enabled);
     applyTrayIcon();
-    m_tray->setToolTip(enabled ? QStringLiteral("LGA Nuke Shortcuts") : QStringLiteral("LGA Nuke Shortcuts — paused"));
+    refreshDiskWarnings();
     updateRegistrations();
+}
+
+void TrayController::refreshDiskWarnings()
+{
+    const QStringList lines = diskWarningLines(*m_state);
+    QStringList tooltip{m_state->enabled() ? QStringLiteral("LGA Nuke Shortcuts")
+                                           : QStringLiteral("LGA Nuke Shortcuts — paused")};
+    for (const DiskWatch &watch : m_state->lowWatches()) {
+        DriveInfo drive;
+        m_state->driveReading(watch.root, &drive);
+        tooltip.append(QStringLiteral("%1 %2 free").arg(drive.label, DiskSpace::formatBytes(drive.freeBytes)));
+    }
+    m_tray->setToolTip(tooltip.join(QLatin1Char('\n')));
+    // Solo si cambio: el menu podria estar abierto, y cada chequeo avisa changed().
+    if (lines == m_diskWarningLines) {
+        return;
+    }
+    m_diskWarningLines = lines;
+    refreshTrayDiskWarnings(m_menu, m_menuActions, lines);
+    for (QAction *action : m_menuActions.diskWarnings) {
+        connect(action, &QAction::triggered, this, &TrayController::showSettings);
+    }
+}
+
+void TrayController::notifyLowSpace(const DriveInfo &drive, const DiskWatch &watch)
+{
+    m_tray->showMessage(QStringLiteral("%1 is running low").arg(drive.label),
+                        QStringLiteral("%1 free of %2. You asked to be warned under %3.")
+                            .arg(DiskSpace::formatBytes(drive.freeBytes), DiskSpace::formatBytes(drive.totalBytes),
+                                 DiskSpace::thresholdText(watch)),
+                        QSystemTrayIcon::Warning, kDiskNotificationMs);
 }
 
 void TrayController::updateRegistrations()

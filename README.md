@@ -36,11 +36,20 @@ The spot is saved relative to the Nuke window, so it keeps working if you move t
 or open Nuke on another monitor. Calibrate again only if you change where the Dope Sheet sits in your
 layout.
 
+## Disk space warnings
+
+Renders and caches can fill a drive overnight. In Settings, under **Disk space**, pick the local drives
+to watch and when each one should warn you: under an amount of free space (**GB**) or under a share of
+the drive (**%**). One interval checks them all, every 15 minutes by default.
+
+When a drive goes under its limit you get a notification, repeated every 6 hours while it stays low,
+and the tray menu shows the drive until there is room again. Unplugged drives are skipped quietly.
+
 ## Where it lives
 
 The app runs in the Windows tray (the icons next to the clock), or in the menu bar on macOS. Click
-its icon for Settings: pause the shortcuts, change them, calibrate the Dope Sheet, start with
-Windows, and check for updates. Closing the window keeps it running; **Quit** in the menu closes it.
+its icon for Settings: pause the shortcuts, change them, calibrate the Dope Sheet, watch disk space,
+start with Windows, and check for updates. Closing the window keeps it running; **Quit** in the menu closes it.
 
 ## Install
 

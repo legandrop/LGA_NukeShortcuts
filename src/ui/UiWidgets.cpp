@@ -86,6 +86,17 @@ IconSpec buildIcon(Icon icon)
         p.moveTo(3, 13); p.lineTo(3.6, 10.4); p.lineTo(10.6, 3.4); p.lineTo(12.6, 5.4); p.lineTo(5.6, 12.4);
         p.closeSubpath();
         break;
+    case Icon::Plus:
+        // "Add drive...": el + del diseno, trazo redondo.
+        s.viewBox = 10; s.stroke = 1.5;
+        p.moveTo(5, 1); p.lineTo(5, 9);
+        p.moveTo(1, 5); p.lineTo(9, 5);
+        break;
+    case Icon::ChevronDown:
+        // Flecha del desplegable del intervalo.
+        s.viewBox = 8; s.stroke = 1.3; s.cap = Qt::FlatCap; s.join = Qt::MiterJoin;
+        p.moveTo(1, 2.5); p.lineTo(4, 5.5); p.lineTo(7, 2.5);
+        break;
     }
     return s;
 }

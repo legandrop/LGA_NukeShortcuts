@@ -9,4 +9,11 @@
 // Devuelve el codigo de salida del proceso.
 int runUiShot(const QStringList &args);
 
+// Sonda de comportamiento sin escritorio: --ui-probe <caso>. Arma widgets reales en la plataforma
+// offscreen de Qt, les manda teclas y clicks como eventos internos (nunca al sistema) y verifica el
+// resultado. Imprime una linea por chequeo y sale 0 si todo paso.
+//  - threshold-focus: el campo del umbral de un disco no toma el teclado al abrir la ventana, y lo
+//    suelta con Enter (guardando), con Escape (sin guardar) y con un click afuera (guardando).
+int runUiProbe(const QStringList &args);
+
 #endif // NUKESHORTCUTS_UISHOT_H
